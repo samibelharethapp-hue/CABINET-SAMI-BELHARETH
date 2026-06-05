@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon espace santé — CABINET SAMI BELHARETH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            pat: { 50:'#ecfdf5', 100:'#d1fae5', 400:'#34d399', 500:'#10b981', 600:'#059669', 700:'#047857', 800:'#065f46' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background: #F5FBF8; }
+    .font-display { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .anim-in { animation: fadeUp 0.4s ease-out; }
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+    .nav-mobile.active { color: #047857; }
+    .nav-mobile.active .nav-dot { opacity: 1; }
+  </style>
+</head>
+<body x-data="patientApp()" class="pb-20 md:pb-0">
+
+<!-- Top bar -->
+<header class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-100">
+  <div class="max-w-5xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-gradient-to-br from-pat-600 to-pat-800 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+        <i data-lucide="heart-pulse" class="w-5 h-5 text-white"></i>
+      </div>
+      <div>
+        <div class="font-display font-bold text-slate-900 text-sm leading-tight">Mon espace santé</div>
+        <div class="text-xs text-slate-500">CABINET SAMI BELHARETH</div>
+      </div>
+    </a>
+    <div class="flex items-center gap-3">
+      <button class="relative p-2 hover:bg-slate-100 rounded-xl">
+        <i data-lucide="bell" class="w-5 h-5 text-slate-600"></i>
+        <span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span>
+      </button>
+      <button class="flex items-center gap-2 p-1.5 hover:bg-slate-100 rounded-xl">
+        <div class="w-8 h-8 bg-gradient-to-br from-rose-400 to-rose-600 rounded-full flex items-center justify-center text-white text-xs font-bold">BH</div>
+        <div class="hidden md:block text-xs">
+          <div class="font-bold text-slate-900">Bibi Hedia</div>
+          <div class="text-slate-500">CNAM</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Desktop nav -->
+  <div class="hidden md:block max-w-5xl mx-auto px-8 pb-2">
+    <div class="flex items-center gap-1">
+      <button @click="page='accueil'" :class="page==='accueil' ? 'bg-pat-100 text-pat-800' : 'text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2">
+        <i data-lucide="home" class="w-4 h-4"></i> Accueil
+      </button>
+      <button @click="page='rdv'" :class="page==='rdv' ? 'bg-pat-100 text-pat-800' : 'text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2">
+        <i data-lucide="calendar-check" class="w-4 h-4"></i> Mes RDV
+      </button>
+      <button @click="page='dossier'" :class="page==='dossier' ? 'bg-pat-100 text-pat-800' : 'text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2">
+        <i data-lucide="folder-heart" class="w-4 h-4"></i> Mon dossier
+      </button>
+      <button @click="page='reeducation'" :class="page==='reeducation' ? 'bg-pat-100 text-pat-800' : 'text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2">
+        <i data-lucide="dumbbell" class="w-4 h-4"></i> Rééducation
+      </button>
+      <button @click="page='paiements'" :class="page==='paiements' ? 'bg-pat-100 text-pat-800' : 'text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2">
+        <i data-lucide="wallet" class="w-4 h-4"></i> Paiements
+      </button>
+      <button @click="page='messagerie'" :class="page==='messagerie' ? 'bg-pat-100 text-pat-800' : 'text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2">
+        <i data-lucide="message-circle" class="w-4 h-4"></i> Messagerie
+        <span class="bg-rose-500 text-white text-[10px] font-bold px-1.5 rounded-full">2</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 md:px-8 py-6">
+
+  <!-- ========== ACCUEIL ========== -->
+  <div x-show="page==='accueil'" class="anim-in space-y-6">
+    <!-- Welcome card -->
+    <div class="bg-gradient-to-br from-pat-700 via-pat-800 to-teal-900 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-2xl shadow-emerald-500/20">
+      <div class="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-48 h-48 bg-pat-400/20 rounded-full blur-3xl"></div>
+      <div class="relative">
+        <div class="text-sm opacity-80 mb-1">Bonjour Mme Bibi 👋</div>
+        <h1 class="font-display text-3xl md:text-4xl font-bold mb-2">Comment vous sentez-vous aujourd'hui ?</h1>
+        <p class="text-emerald-100 mb-6 max-w-md">Votre rééducation post-PTG progresse bien. Continuez vos exercices quotidiens !</p>
+        <div class="grid grid-cols-3 gap-2 max-w-md">
+          <button class="flex flex-col items-center gap-2 p-3 bg-white/15 backdrop-blur rounded-xl hover:bg-white/25 transition">
+            <div class="text-2xl">😊</div>
+            <span class="text-xs font-semibold">Très bien</span>
+          </button>
+          <button class="flex flex-col items-center gap-2 p-3 bg-white/15 backdrop-blur rounded-xl hover:bg-white/25 transition">
+            <div class="text-2xl">😐</div>
+            <span class="text-xs font-semibold">Moyen</span>
+          </button>
+          <button class="flex flex-col items-center gap-2 p-3 bg-white/15 backdrop-blur rounded-xl hover:bg-white/25 transition">
+            <div class="text-2xl">😣</div>
+            <span class="text-xs font-semibold">Douleurs</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+        <div class="w-10 h-10 bg-rose-100 rounded-xl flex items-center justify-center mb-2">
+          <i data-lucide="heart" class="w-5 h-5 text-rose-600"></i>
+        </div>
+        <div class="text-2xl font-display font-bold text-slate-900">3<span class="text-base text-slate-400">/10</span></div>
+        <div class="text-xs text-slate-500 mt-1">Douleur (EVA)</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+        <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center mb-2">
+          <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600"></i>
+        </div>
+        <div class="text-2xl font-display font-bold text-slate-900">95°</div>
+        <div class="text-xs text-slate-500 mt-1">Flexion genou</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-2">
+          <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
+        </div>
+        <div class="text-2xl font-display font-bold text-slate-900">J+42</div>
+        <div class="text-xs text-slate-500 mt-1">Post-opératoire</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+        <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center mb-2">
+          <i data-lucide="award" class="w-5 h-5 text-amber-600"></i>
+        </div>
+        <div class="text-2xl font-display font-bold text-slate-900">85<span class="text-base text-slate-400">%</span></div>
+        <div class="text-xs text-slate-500 mt-1">Observance</div>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <a href="#" @click.prevent="page='rdv'" class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition group">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 bg-gradient-to-br from-pat-500 to-pat-700 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition">
+            <i data-lucide="calendar-plus" class="w-7 h-7 text-white"></i>
+          </div>
+          <div class="flex-1">
+            <div class="font-bold text-slate-900">Prendre RDV</div>
+            <div class="text-xs text-slate-500">Disponible 24/7 en ligne</div>
+          </div>
+          <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition"></i>
+        </div>
+      </a>
+      <a href="#" @click.prevent="page='messagerie'" class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition group">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition">
+            <i data-lucide="message-circle-heart" class="w-7 h-7 text-white"></i>
+          </div>
+          <div class="flex-1">
+            <div class="font-bold text-slate-900">Contacter le cabinet</div>
+            <div class="text-xs text-slate-500">Réponse sous 24h</div>
+          </div>
+          <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition"></i>
+        </div>
+      </a>
+    </div>
+
+    <!-- Prochain RDV -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <h3 class="font-display font-bold text-lg text-slate-900">Mon prochain rendez-vous</h3>
+        <button @click="page='rdv'" class="text-sm text-pat-700 font-semibold">Tous mes RDV →</button>
+      </div>
+      <div class="p-5">
+        <div class="flex flex-col md:flex-row items-start gap-5">
+          <div class="flex-shrink-0 text-center bg-gradient-to-br from-pat-100 to-emerald-50 rounded-2xl p-4 w-24">
+            <div class="text-xs font-bold uppercase text-pat-700">Lundi</div>
+            <div class="font-display text-3xl font-bold text-pat-800">15</div>
+            <div class="text-xs font-bold text-pat-700">juin</div>
+          </div>
+          <div class="flex-1">
+            <div class="font-display text-xl font-bold text-slate-900">Contrôle post-opératoire</div>
+            <p class="text-sm text-slate-600 mt-1">PTG droite — Suivi à 8 semaines</p>
+            <div class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+              <div class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-pat-700"></i> <span class="font-semibold">10:30</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="user-round" class="w-4 h-4 text-pat-700"></i> <span class="font-semibold">Dr Belhareth</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-pat-700"></i> <span class="font-semibold">Salammbô</span></div>
+            </div>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <button class="px-4 py-2 bg-pat-700 text-white rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-pat-800">
+                <i data-lucide="navigation" class="w-4 h-4"></i> Itinéraire
+              </button>
+              <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold hover:border-pat-700 hover:text-pat-700 transition flex items-center gap-2">
+                <i data-lucide="calendar-x" class="w-4 h-4"></i> Annuler / Reporter
+              </button>
+              <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold hover:border-pat-700 hover:text-pat-700 transition flex items-center gap-2">
+                <i data-lucide="download" class="w-4 h-4"></i> Ajouter au calendrier
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ma rééducation du jour + ordonnance -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="bg-gradient-to-r from-pat-600 to-teal-700 p-4 text-white">
+          <div class="flex items-center gap-2 text-xs font-semibold opacity-80 mb-1"><i data-lucide="dumbbell" class="w-3.5 h-3.5"></i> AUJOURD'HUI</div>
+          <div class="font-display font-bold text-lg">Mes exercices</div>
+          <div class="text-xs opacity-80">5 exercices · 20 min</div>
+        </div>
+        <div class="p-4 space-y-2">
+          <div class="flex items-center gap-3 p-2.5 bg-emerald-50 rounded-xl">
+            <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white"><i data-lucide="check" class="w-4 h-4"></i></div>
+            <div class="flex-1"><div class="text-sm font-semibold text-slate-900">Flexion-extension assise</div><div class="text-xs text-slate-500">3 séries × 15</div></div>
+          </div>
+          <div class="flex items-center gap-3 p-2.5 bg-emerald-50 rounded-xl">
+            <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white"><i data-lucide="check" class="w-4 h-4"></i></div>
+            <div class="flex-1"><div class="text-sm font-semibold text-slate-900">Renforcement quadriceps</div><div class="text-xs text-slate-500">3 séries × 10</div></div>
+          </div>
+          <div class="flex items-center gap-3 p-2.5 bg-amber-50 rounded-xl border border-amber-200">
+            <div class="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center text-white"><i data-lucide="play" class="w-4 h-4"></i></div>
+            <div class="flex-1"><div class="text-sm font-semibold text-slate-900">Marche assistée</div><div class="text-xs text-slate-500">10 min · En cours</div></div>
+          </div>
+          <div class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl">
+            <div class="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-slate-500"><i data-lucide="circle" class="w-4 h-4"></i></div>
+            <div class="flex-1"><div class="text-sm font-semibold text-slate-900">Équilibre debout</div><div class="text-xs text-slate-500">3 séries × 30s</div></div>
+          </div>
+          <div class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl">
+            <div class="w-8 h-8 bg-slate-200 rounded-lg flex items-center justify-center text-slate-500"><i data-lucide="circle" class="w-4 h-4"></i></div>
+            <div class="flex-1"><div class="text-sm font-semibold text-slate-900">Étirements ischio-jambiers</div><div class="text-xs text-slate-500">5 min</div></div>
+          </div>
+          <button @click="page='reeducation'" class="w-full mt-2 px-3 py-2.5 bg-pat-700 text-white text-sm font-bold rounded-xl">Voir les vidéos guidées</button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
+          <div class="flex items-center gap-2 text-xs font-semibold opacity-80 mb-1"><i data-lucide="pill" class="w-3.5 h-3.5"></i> MON TRAITEMENT</div>
+          <div class="font-display font-bold text-lg">Ordonnance en cours</div>
+          <div class="text-xs opacity-80">3 médicaments · jusqu'au 19 juin</div>
+        </div>
+        <div class="p-4 space-y-2">
+          <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center"><i data-lucide="capsule" class="w-5 h-5 text-blue-700"></i></div>
+            <div class="flex-1">
+              <div class="text-sm font-bold text-slate-900">Voltarène LP 75 mg</div>
+              <div class="text-xs text-slate-500">1 cp soir · 14 jours restants</div>
+            </div>
+            <span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded">En cours</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center"><i data-lucide="capsule" class="w-5 h-5 text-purple-700"></i></div>
+            <div class="flex-1">
+              <div class="text-sm font-bold text-slate-900">Lanzor 30 mg</div>
+              <div class="text-xs text-slate-500">1 cp · 14 jours restants</div>
+            </div>
+            <span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded">En cours</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center"><i data-lucide="capsule" class="w-5 h-5 text-orange-700"></i></div>
+            <div class="flex-1">
+              <div class="text-sm font-bold text-slate-900">Tramadis 50 mg</div>
+              <div class="text-xs text-slate-500">Si douleur · max 3/j</div>
+            </div>
+            <span class="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-1 rounded">À la demande</span>
+          </div>
+          <button class="w-full mt-2 px-3 py-2.5 bg-white border border-slate-200 hover:border-blue-600 text-slate-900 text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition">
+            <i data-lucide="download" class="w-4 h-4"></i> Télécharger l'ordonnance
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages cabinet -->
+    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 flex items-start gap-4">
+      <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow shrink-0">
+        <i data-lucide="info" class="w-6 h-6 text-blue-700"></i>
+      </div>
+      <div class="flex-1">
+        <div class="font-bold text-slate-900 mb-1">Message du cabinet</div>
+        <p class="text-sm text-slate-700 leading-relaxed">N'oubliez pas votre <strong>radio de contrôle</strong> avant votre prochain RDV du 15 juin. Vous pouvez prendre RDV directement au centre de radiologie Dr Mohamed Selmen Ben Mrad (Salammbô).</p>
+      </div>
+      <button class="text-xs text-blue-700 font-semibold whitespace-nowrap">Voir le centre →</button>
+    </div>
+  </div>
+
+  <!-- ========== RDV ========== -->
+  <div x-show="page==='rdv'" class="anim-in space-y-6">
+    <div>
+      <h2 class="font-display text-3xl font-bold text-slate-900">Mes rendez-vous</h2>
+      <p class="text-slate-600 mt-1">Gérez vos consultations en ligne 24/7</p>
+    </div>
+
+    <!-- Action: prendre RDV -->
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div class="bg-gradient-to-r from-pat-600 to-pat-800 p-6 text-white">
+        <div class="font-display text-xl font-bold mb-1">Prendre un nouveau rendez-vous</div>
+        <p class="text-sm opacity-90">Choisissez le type de consultation et un créneau libre</p>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <button class="p-4 border-2 border-pat-600 bg-pat-50 rounded-xl text-left">
+            <i data-lucide="stethoscope" class="w-5 h-5 text-pat-700 mb-2"></i>
+            <div class="text-sm font-bold text-slate-900">Consultation</div>
+            <div class="text-xs text-slate-500 mt-0.5">Premier avis</div>
+          </button>
+          <button class="p-4 border-2 border-slate-200 rounded-xl text-left hover:border-pat-300 transition">
+            <i data-lucide="repeat" class="w-5 h-5 text-slate-600 mb-2"></i>
+            <div class="text-sm font-bold text-slate-900">Contrôle</div>
+            <div class="text-xs text-slate-500 mt-0.5">Suivi post-op</div>
+          </button>
+          <button class="p-4 border-2 border-slate-200 rounded-xl text-left hover:border-pat-300 transition">
+            <i data-lucide="image" class="w-5 h-5 text-slate-600 mb-2"></i>
+            <div class="text-sm font-bold text-slate-900">Examens</div>
+            <div class="text-xs text-slate-500 mt-0.5">Apporter résultats</div>
+          </button>
+          <button class="p-4 border-2 border-slate-200 rounded-xl text-left hover:border-pat-300 transition">
+            <i data-lucide="zap" class="w-5 h-5 text-rose-600 mb-2"></i>
+            <div class="text-sm font-bold text-slate-900">Urgence</div>
+            <div class="text-xs text-slate-500 mt-0.5">Sous 24h</div>
+          </button>
+        </div>
+
+        <div class="text-sm font-semibold text-slate-700 mb-3">Créneaux disponibles cette semaine</div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+          <div class="border border-slate-200 rounded-xl p-3">
+            <div class="text-xs font-bold text-slate-500 mb-2">Lundi 9 juin</div>
+            <div class="flex flex-wrap gap-1">
+              <button class="px-2 py-1 bg-pat-100 text-pat-800 text-xs font-bold rounded">09:00</button>
+              <button class="px-2 py-1 bg-pat-100 text-pat-800 text-xs font-bold rounded">10:30</button>
+              <button class="px-2 py-1 bg-pat-100 text-pat-800 text-xs font-bold rounded">14:00</button>
+            </div>
+          </div>
+          <div class="border border-slate-200 rounded-xl p-3">
+            <div class="text-xs font-bold text-slate-500 mb-2">Mardi 10 juin</div>
+            <div class="flex flex-wrap gap-1">
+              <button class="px-2 py-1 bg-pat-100 text-pat-800 text-xs font-bold rounded">11:00</button>
+              <button class="px-2 py-1 bg-pat-100 text-pat-800 text-xs font-bold rounded">15:30</button>
+            </div>
+          </div>
+          <div class="border border-pat-700 bg-pat-50 rounded-xl p-3">
+            <div class="text-xs font-bold text-pat-700 mb-2">Mercredi 11 juin · Recommandé</div>
+            <div class="flex flex-wrap gap-1">
+              <button class="px-2 py-1 bg-pat-700 text-white text-xs font-bold rounded">09:30</button>
+              <button class="px-2 py-1 bg-pat-100 text-pat-800 text-xs font-bold rounded">11:30</button>
+              <button class="px-2 py-1 bg-pat-100 text-pat-800 text-xs font-bold rounded">14:30</button>
+            </div>
+          </div>
+        </div>
+        <button class="w-full px-4 py-3 bg-pat-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-pat-800 shadow-lg shadow-emerald-500/30">
+          <i data-lucide="check-circle-2" class="w-5 h-5"></i> Confirmer · Mercredi 11 juin à 09:30
+        </button>
+      </div>
+    </div>
+
+    <!-- Mes RDV liste -->
+    <div>
+      <h3 class="font-display font-bold text-lg text-slate-900 mb-3">À venir</h3>
+      <div class="space-y-3">
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-5">
+          <div class="text-center bg-emerald-50 rounded-xl p-3 w-20">
+            <div class="text-[10px] font-bold uppercase text-emerald-700">Lun</div>
+            <div class="font-display text-2xl font-bold text-emerald-800">15</div>
+            <div class="text-[10px] font-bold text-emerald-700">juin</div>
+          </div>
+          <div class="flex-1">
+            <div class="font-bold text-slate-900">Contrôle post-op PTG</div>
+            <div class="text-xs text-slate-500">10:30 · Dr Belhareth · Cabinet Salammbô</div>
+          </div>
+          <span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">CONFIRMÉ</span>
+        </div>
+      </div>
+
+      <h3 class="font-display font-bold text-lg text-slate-900 mt-6 mb-3">Historique</h3>
+      <div class="space-y-3">
+        <template x-for="r in [
+          {date:'05/06/2026', motif:'Consultation contrôle post-op PTG', dr:'Dr Belhareth'},
+          {date:'24/04/2026', motif:'Chirurgie PTG droite', dr:'Bloc opératoire'},
+          {date:'10/04/2026', motif:'Consultation pré-opératoire', dr:'Dr Belhareth'},
+          {date:'15/03/2026', motif:'Radio genoux en charge', dr:'Centre radiologie'},
+        ]" :key="r.date">
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-4 hover:shadow-md transition cursor-pointer">
+            <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+              <i data-lucide="check" class="w-5 h-5 text-slate-500"></i>
+            </div>
+            <div class="flex-1">
+              <div class="font-semibold text-slate-900 text-sm" x-text="r.motif"></div>
+              <div class="text-xs text-slate-500" x-text="r.date + ' · ' + r.dr"></div>
+            </div>
+            <button class="text-xs text-pat-700 font-semibold">Voir CR →</button>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== DOSSIER ========== -->
+  <div x-show="page==='dossier'" class="anim-in space-y-6">
+    <div>
+      <h2 class="font-display text-3xl font-bold text-slate-900">Mon dossier médical</h2>
+      <p class="text-slate-600 mt-1">Toutes vos informations en un seul endroit · chiffré et sécurisé</p>
+    </div>
+
+    <!-- ID card -->
+    <div class="bg-gradient-to-br from-slate-900 to-slate-700 rounded-3xl p-6 text-white relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-48 h-48 bg-pat-500/20 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
+      <div class="relative flex items-center gap-5">
+        <div class="w-20 h-20 bg-gradient-to-br from-rose-400 to-rose-600 rounded-2xl flex items-center justify-center text-white font-display text-2xl font-bold shadow-xl">BH</div>
+        <div class="flex-1">
+          <div class="font-display text-2xl font-bold">Bibi Hedia</div>
+          <div class="text-sm opacity-80">Née le 05/05/1976 · 49 ans · F</div>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span class="text-[10px] font-bold bg-pat-500 px-2 py-1 rounded-full">CNAM ✓ · 050565</span>
+            <span class="text-[10px] font-bold bg-amber-500 px-2 py-1 rounded-full">Diabète T2</span>
+            <span class="text-[10px] font-bold bg-rose-500 px-2 py-1 rounded-full">⚠ Allergie Pénicilline</span>
+          </div>
+        </div>
+        <button class="hidden md:block p-3 bg-white/10 backdrop-blur rounded-xl hover:bg-white/20">
+          <i data-lucide="qr-code" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sections -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+        <h3 class="font-display font-bold text-slate-900 flex items-center gap-2 mb-3">
+          <div class="w-9 h-9 bg-rose-100 rounded-xl flex items-center justify-center"><i data-lucide="heart" class="w-5 h-5 text-rose-700"></i></div>
+          Antécédents médicaux
+        </h3>
+        <ul class="space-y-2 text-sm text-slate-700">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span> Diabète type 2 (depuis 2018)</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span> HTA traitée</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Dyslipidémie</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+        <h3 class="font-display font-bold text-slate-900 flex items-center gap-2 mb-3">
+          <div class="w-9 h-9 bg-cyan-100 rounded-xl flex items-center justify-center"><i data-lucide="scissors" class="w-5 h-5 text-cyan-700"></i></div>
+          Antécédents chirurgicaux
+        </h3>
+        <ul class="space-y-2 text-sm text-slate-700">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span> Cholécystectomie (2010)</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-pat-500 rounded-full"></span> PTG droite (24/04/2026)</li>
+        </ul>
+      </div>
+      <div class="bg-rose-50 rounded-2xl border border-rose-200 p-5">
+        <h3 class="font-display font-bold text-slate-900 flex items-center gap-2 mb-3">
+          <div class="w-9 h-9 bg-rose-200 rounded-xl flex items-center justify-center"><i data-lucide="alert-triangle" class="w-5 h-5 text-rose-800"></i></div>
+          Allergies — Attention
+        </h3>
+        <ul class="space-y-2 text-sm text-slate-700">
+          <li class="flex items-center gap-2 font-semibold"><i data-lucide="alert-circle" class="w-4 h-4 text-rose-700"></i> Pénicilline (réaction cutanée sévère)</li>
+          <li class="flex items-center gap-2 font-semibold"><i data-lucide="alert-circle" class="w-4 h-4 text-rose-700"></i> Iode</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+        <h3 class="font-display font-bold text-slate-900 flex items-center gap-2 mb-3">
+          <div class="w-9 h-9 bg-pat-100 rounded-xl flex items-center justify-center"><i data-lucide="activity" class="w-5 h-5 text-pat-700"></i></div>
+          Constantes
+        </h3>
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <div><div class="text-xs text-slate-500">Taille</div><div class="font-bold text-slate-900">1,62 m</div></div>
+          <div><div class="text-xs text-slate-500">Poids</div><div class="font-bold text-slate-900">73 kg</div></div>
+          <div><div class="text-xs text-slate-500">IMC</div><div class="font-bold text-amber-600">28</div></div>
+          <div><div class="text-xs text-slate-500">Groupe sanguin</div><div class="font-bold text-slate-900">A+</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents -->
+    <div>
+      <h3 class="font-display font-bold text-lg text-slate-900 mb-3">Mes documents</h3>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <template x-for="doc in [
+          {nom:'Compte rendu opératoire PTG',date:'24/04/2026',icone:'file-text',couleur:'bg-rose-100 text-rose-700'},
+          {nom:'Ordonnance post-op',date:'05/06/2026',icone:'pill',couleur:'bg-blue-100 text-blue-700'},
+          {nom:'Radio genoux en charge',date:'15/03/2026',icone:'image',couleur:'bg-cyan-100 text-cyan-700'},
+          {nom:'Échographie abdomino-pelvienne',date:'17/05/2023',icone:'scan',couleur:'bg-violet-100 text-violet-700'},
+          {nom:'Bilan biologique pré-op',date:'10/04/2026',icone:'flask-conical',couleur:'bg-emerald-100 text-emerald-700'},
+          {nom:'Devis chirurgie PTG',date:'15/03/2026',icone:'receipt',couleur:'bg-amber-100 text-amber-700'},
+        ]" :key="doc.nom">
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-start gap-3 hover:shadow-md transition cursor-pointer">
+            <div :class="doc.couleur" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
+              <i :data-lucide="doc.icone" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-bold text-slate-900 truncate" x-text="doc.nom"></div>
+              <div class="text-xs text-slate-500" x-text="doc.date"></div>
+            </div>
+            <button class="p-1.5 hover:bg-slate-100 rounded-lg">
+              <i data-lucide="download" class="w-4 h-4 text-slate-400"></i>
+            </button>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== RÉÉDUCATION ========== -->
+  <div x-show="page==='reeducation'" class="anim-in space-y-6">
+    <div>
+      <h2 class="font-display text-3xl font-bold text-slate-900">Ma rééducation</h2>
+      <p class="text-slate-600 mt-1">Programme personnalisé post-PTG droite · J+42</p>
+    </div>
+
+    <!-- Progression -->
+    <div class="bg-gradient-to-br from-pat-600 to-teal-800 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="relative">
+        <div class="text-xs uppercase tracking-wider opacity-80 font-bold mb-2">Ma progression</div>
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div>
+            <div class="font-display text-3xl font-bold">42</div>
+            <div class="text-xs opacity-80">Jours post-op</div>
+          </div>
+          <div>
+            <div class="font-display text-3xl font-bold">36/90</div>
+            <div class="text-xs opacity-80">Séances kiné</div>
+          </div>
+          <div>
+            <div class="font-display text-3xl font-bold">95°</div>
+            <div class="text-xs opacity-80">Flexion (cible 120°)</div>
+          </div>
+        </div>
+        <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+          <div class="h-full bg-white rounded-full" style="width: 40%"></div>
+        </div>
+        <div class="flex justify-between text-xs mt-2 opacity-80">
+          <span>Début</span>
+          <span class="font-bold">40% · Bon rythme !</span>
+          <span>3 mois</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exercices vidéo -->
+    <div>
+      <h3 class="font-display font-bold text-lg text-slate-900 mb-3">Mes exercices guidés</h3>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <template x-for="ex in [
+          {nom:'Flexion-extension assise',duree:'3 × 15',video:'bg-gradient-to-br from-emerald-400 to-pat-700',fait:true},
+          {nom:'Renforcement quadriceps',duree:'3 × 10',video:'bg-gradient-to-br from-cyan-400 to-blue-700',fait:true},
+          {nom:'Marche assistée',duree:'10 min',video:'bg-gradient-to-br from-amber-400 to-orange-700',fait:false,encours:true},
+          {nom:'Équilibre debout',duree:'3 × 30s',video:'bg-gradient-to-br from-violet-400 to-purple-700',fait:false},
+          {nom:'Étirements ischio-jambiers',duree:'5 min',video:'bg-gradient-to-br from-rose-400 to-pink-700',fait:false},
+          {nom:'Massage cicatrice',duree:'5 min',video:'bg-gradient-to-br from-slate-400 to-slate-700',fait:false},
+        ]" :key="ex.nom">
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-xl hover:-translate-y-1 transition cursor-pointer">
+            <div :class="ex.video" class="aspect-video flex items-center justify-center relative">
+              <div class="w-14 h-14 bg-white/20 backdrop-blur rounded-full flex items-center justify-center">
+                <i data-lucide="play" class="w-6 h-6 text-white"></i>
+              </div>
+              <template x-if="ex.fait">
+                <div class="absolute top-3 right-3 bg-emerald-500 text-white p-1.5 rounded-full"><i data-lucide="check" class="w-4 h-4"></i></div>
+              </template>
+              <template x-if="ex.encours">
+                <div class="absolute top-3 right-3 bg-amber-500 text-white px-2 py-1 rounded-full text-[10px] font-bold">EN COURS</div>
+              </template>
+            </div>
+            <div class="p-4">
+              <div class="font-bold text-slate-900 text-sm" x-text="ex.nom"></div>
+              <div class="text-xs text-slate-500 mt-0.5" x-text="ex.duree"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Kiné référent -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-4">
+      <div class="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-700 rounded-2xl flex items-center justify-center text-white font-bold">KM</div>
+      <div class="flex-1">
+        <div class="text-xs font-semibold uppercase text-slate-500">Votre kinésithérapeute</div>
+        <div class="font-bold text-slate-900">Karim Mansouri</div>
+        <div class="text-xs text-slate-500">Centre de kiné Salammbô · 36/90 séances</div>
+      </div>
+      <button class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-blue-700">
+        <i data-lucide="phone" class="w-4 h-4"></i> Contacter
+      </button>
+    </div>
+  </div>
+
+  <!-- ========== PAIEMENTS ========== -->
+  <div x-show="page==='paiements'" class="anim-in space-y-6">
+    <div>
+      <h2 class="font-display text-3xl font-bold text-slate-900">Paiements & Factures</h2>
+      <p class="text-slate-600 mt-1">Historique et paiement en ligne sécurisé</p>
+    </div>
+
+    <!-- Solde -->
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="md:col-span-2 bg-gradient-to-br from-slate-900 to-slate-700 rounded-3xl p-6 text-white">
+        <div class="text-xs uppercase tracking-wider opacity-70 mb-2">Solde à régler</div>
+        <div class="font-display text-5xl font-bold mb-4">0 <span class="text-2xl opacity-70">TND</span></div>
+        <div class="flex items-center gap-2 text-sm bg-emerald-500/20 backdrop-blur px-3 py-2 rounded-xl w-fit">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+          Vous êtes à jour ✨
+        </div>
+      </div>
+      <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+        <div class="text-xs uppercase tracking-wider text-slate-500 mb-2">Total réglé 2026</div>
+        <div class="font-display text-3xl font-bold text-slate-900 mb-1">18 050 TND</div>
+        <div class="text-xs text-emerald-600 font-semibold">CNAM remboursé : 4 200 TND</div>
+      </div>
+    </div>
+
+    <!-- Méthodes -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+      <h3 class="font-bold text-slate-900 mb-3">Modes de paiement disponibles</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <button class="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl text-center hover:border-blue-500 transition">
+          <div class="text-2xl mb-1">💳</div>
+          <div class="text-xs font-bold">Carte bancaire</div>
+        </button>
+        <button class="p-4 bg-purple-50 border-2 border-purple-200 rounded-xl text-center hover:border-purple-500 transition">
+          <div class="text-2xl mb-1">📱</div>
+          <div class="text-xs font-bold">Konnect</div>
+        </button>
+        <button class="p-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl text-center hover:border-emerald-500 transition">
+          <div class="text-2xl mb-1">💸</div>
+          <div class="text-xs font-bold">Flouci</div>
+        </button>
+        <button class="p-4 bg-amber-50 border-2 border-amber-200 rounded-xl text-center hover:border-amber-500 transition">
+          <div class="text-2xl mb-1">🏥</div>
+          <div class="text-xs font-bold">CNAM</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Historique -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div class="p-5 border-b border-slate-100">
+        <h3 class="font-display font-bold text-slate-900">Historique des paiements</h3>
+      </div>
+      <div class="divide-y divide-slate-100">
+        <template x-for="p in [
+          {date:'05/06/2026',desc:'Consultation contrôle',montant:50,mode:'Espèces',ok:true},
+          {date:'24/04/2026',desc:'Chirurgie PTG droite',montant:17500,mode:'Carte',ok:true},
+          {date:'10/04/2026',desc:'Acompte PTG (30%)',montant:5250,mode:'Espèces',ok:true},
+          {date:'15/03/2026',desc:'Consultation pré-op',montant:80,mode:'Espèces',ok:true},
+          {date:'15/03/2026',desc:'Radio genoux',montant:120,mode:'CNAM',ok:true},
+          {date:'10/02/2026',desc:'Consultation initiale',montant:80,mode:'Carte',ok:true},
+        ]" :key="p.date+p.desc">
+          <div class="p-4 hover:bg-slate-50 flex items-center gap-4">
+            <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+              <i data-lucide="check" class="w-5 h-5 text-emerald-700"></i>
+            </div>
+            <div class="flex-1">
+              <div class="font-semibold text-slate-900 text-sm" x-text="p.desc"></div>
+              <div class="text-xs text-slate-500" x-text="p.date + ' · ' + p.mode"></div>
+            </div>
+            <div class="text-right">
+              <div class="font-display font-bold text-slate-900" x-text="p.montant + ' TND'"></div>
+              <button class="text-[10px] text-pat-700 font-semibold flex items-center gap-1">
+                <i data-lucide="download" class="w-3 h-3"></i> Reçu
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MESSAGERIE ========== -->
+  <div x-show="page==='messagerie'" class="anim-in space-y-6">
+    <div>
+      <h2 class="font-display text-3xl font-bold text-slate-900">Messagerie sécurisée</h2>
+      <p class="text-slate-600 mt-1">Conversations chiffrées avec le cabinet</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden h-[600px] flex">
+      <!-- Conversations -->
+      <div class="w-80 border-r border-slate-100 overflow-y-auto">
+        <div class="p-3 border-b border-slate-100">
+          <div class="relative">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" placeholder="Rechercher" class="w-full pl-9 pr-3 py-2 bg-slate-100 border-0 rounded-lg text-sm" />
+          </div>
+        </div>
+        <div class="divide-y divide-slate-100">
+          <div class="p-4 bg-pat-50 border-l-4 border-pat-700 cursor-pointer">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-medical-teal to-teal-700 rounded-full flex items-center justify-center text-white text-xs font-bold">DB</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <div class="font-bold text-sm text-slate-900">Dr Belhareth</div>
+                  <div class="text-[10px] text-slate-500">10:24</div>
+                </div>
+                <div class="text-xs text-slate-600 truncate">Bonjour Madame, votre radio de...</div>
+              </div>
+              <span class="w-2.5 h-2.5 bg-pat-700 rounded-full"></span>
+            </div>
+          </div>
+          <div class="p-4 hover:bg-slate-50 cursor-pointer">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">SY</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <div class="font-bold text-sm text-slate-900">Secrétariat</div>
+                  <div class="text-[10px] text-slate-500">Hier</div>
+                </div>
+                <div class="text-xs text-slate-500 truncate">Votre RDV est confirmé pour le...</div>
+              </div>
+            </div>
+          </div>
+          <div class="p-4 hover:bg-slate-50 cursor-pointer">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">KM</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <div class="font-bold text-sm text-slate-900">Karim (Kiné)</div>
+                  <div class="text-[10px] text-slate-500">3 juin</div>
+                </div>
+                <div class="text-xs text-slate-500 truncate">Bravo pour vos progrès cette...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active conversation -->
+      <div class="flex-1 flex flex-col">
+        <div class="p-4 border-b border-slate-100 flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-medical-teal to-teal-700 rounded-full flex items-center justify-center text-white text-xs font-bold">DB</div>
+          <div class="flex-1">
+            <div class="font-bold text-slate-900">Dr Sami Belhareth</div>
+            <div class="text-xs text-emerald-600 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> En ligne</div>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-500"><i data-lucide="lock" class="w-3.5 h-3.5"></i> Chiffré E2E</div>
+        </div>
+        <div class="flex-1 p-5 space-y-4 overflow-y-auto bg-slate-50">
+          <div class="flex justify-center">
+            <span class="text-[10px] bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Aujourd'hui</span>
+          </div>
+          <div class="flex gap-2 max-w-[75%]">
+            <div class="w-8 h-8 bg-medical-teal rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0">DB</div>
+            <div>
+              <div class="bg-white rounded-2xl rounded-tl-sm p-3 shadow-sm text-sm text-slate-800">Bonjour Madame Bibi, comment se passe votre rééducation cette semaine ?</div>
+              <div class="text-[10px] text-slate-500 mt-1 px-2">10:18</div>
+            </div>
+          </div>
+          <div class="flex gap-2 max-w-[75%] ml-auto flex-row-reverse">
+            <div>
+              <div class="bg-pat-700 text-white rounded-2xl rounded-tr-sm p-3 shadow-sm text-sm">Bonjour Docteur, ça va beaucoup mieux ! Je marche presque sans canne maintenant. La douleur est à 3/10 le matin.</div>
+              <div class="text-[10px] text-slate-500 mt-1 px-2 text-right">10:21 · Lu ✓✓</div>
+            </div>
+          </div>
+          <div class="flex gap-2 max-w-[75%]">
+            <div class="w-8 h-8 bg-medical-teal rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0">DB</div>
+            <div>
+              <div class="bg-white rounded-2xl rounded-tl-sm p-3 shadow-sm text-sm text-slate-800">Excellent progrès ! Continuez les exercices d'extension. N'oubliez pas votre radio de contrôle avant notre RDV du 15. Je vous envoie la demande.</div>
+              <div class="text-[10px] text-slate-500 mt-1 px-2">10:24</div>
+            </div>
+          </div>
+          <div class="flex gap-2 max-w-[75%]">
+            <div class="w-8 h-8 bg-medical-teal rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0">DB</div>
+            <div class="bg-white rounded-2xl rounded-tl-sm p-3 shadow-sm flex items-center gap-3 w-72">
+              <div class="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center"><i data-lucide="file-text" class="w-5 h-5 text-rose-700"></i></div>
+              <div class="flex-1">
+                <div class="text-sm font-bold text-slate-900">Demande radio</div>
+                <div class="text-xs text-slate-500">PDF · 124 Ko</div>
+              </div>
+              <button class="p-1.5 bg-pat-100 rounded-lg"><i data-lucide="download" class="w-4 h-4 text-pat-700"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-slate-100 flex items-center gap-2">
+          <button class="p-2.5 hover:bg-slate-100 rounded-xl"><i data-lucide="paperclip" class="w-5 h-5 text-slate-500"></i></button>
+          <input type="text" placeholder="Écrire un message..." class="flex-1 px-4 py-2.5 bg-slate-100 border-0 rounded-xl text-sm focus:ring-2 focus:ring-pat-700 focus:bg-white" />
+          <button class="p-2.5 bg-pat-700 text-white rounded-xl hover:bg-pat-800"><i data-lucide="send" class="w-5 h-5"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Mobile bottom nav -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40">
+  <div class="grid grid-cols-5">
+    <button @click="page='accueil'" :class="page==='accueil' ? 'nav-mobile active' : 'text-slate-500'" class="nav-mobile py-3 flex flex-col items-center gap-1 relative">
+      <i data-lucide="home" class="w-5 h-5"></i>
+      <span class="text-[10px] font-semibold">Accueil</span>
+      <span class="nav-dot absolute top-1 w-1 h-1 bg-pat-700 rounded-full opacity-0"></span>
+    </button>
+    <button @click="page='rdv'" :class="page==='rdv' ? 'nav-mobile active' : 'text-slate-500'" class="nav-mobile py-3 flex flex-col items-center gap-1 relative">
+      <i data-lucide="calendar" class="w-5 h-5"></i>
+      <span class="text-[10px] font-semibold">RDV</span>
+      <span class="nav-dot absolute top-1 w-1 h-1 bg-pat-700 rounded-full opacity-0"></span>
+    </button>
+    <button @click="page='dossier'" :class="page==='dossier' ? 'nav-mobile active' : 'text-slate-500'" class="nav-mobile py-3 flex flex-col items-center gap-1 relative">
+      <i data-lucide="folder-heart" class="w-5 h-5"></i>
+      <span class="text-[10px] font-semibold">Dossier</span>
+      <span class="nav-dot absolute top-1 w-1 h-1 bg-pat-700 rounded-full opacity-0"></span>
+    </button>
+    <button @click="page='reeducation'" :class="page==='reeducation' ? 'nav-mobile active' : 'text-slate-500'" class="nav-mobile py-3 flex flex-col items-center gap-1 relative">
+      <i data-lucide="dumbbell" class="w-5 h-5"></i>
+      <span class="text-[10px] font-semibold">Rééduc</span>
+      <span class="nav-dot absolute top-1 w-1 h-1 bg-pat-700 rounded-full opacity-0"></span>
+    </button>
+    <button @click="page='messagerie'" :class="page==='messagerie' ? 'nav-mobile active' : 'text-slate-500'" class="nav-mobile py-3 flex flex-col items-center gap-1 relative">
+      <div class="relative">
+        <i data-lucide="message-circle" class="w-5 h-5"></i>
+        <span class="absolute -top-1 -right-2 bg-rose-500 text-white text-[8px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center">2</span>
+      </div>
+      <span class="text-[10px] font-semibold">Messages</span>
+      <span class="nav-dot absolute top-1 w-1 h-1 bg-pat-700 rounded-full opacity-0"></span>
+    </button>
+  </div>
+</nav>
+
+<script>
+function patientApp() {
+  return {
+    page: 'accueil',
+    init() {
+      this.$watch('page', () => setTimeout(() => lucide.createIcons(), 50));
+    }
+  }
+}
+document.addEventListener('alpine:initialized', () => lucide.createIcons());
+window.addEventListener('load', () => lucide.createIcons());
+</script>
+</body>
+</html>

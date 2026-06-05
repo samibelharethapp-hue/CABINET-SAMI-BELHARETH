@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Espace Médecin — Dr Belhareth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            medical: { teal: '#0F766E', navy: '#0B3954', mint: '#D1FAE5' },
+            brand: { 50:'#ecfeff',100:'#cffafe',500:'#06b6d4',600:'#0891b2',700:'#0e7490',800:'#155e75' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background: #F8FAFC; }
+    .font-display { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+    .sidebar-item.active { background: linear-gradient(135deg, #0F766E 0%, #0e7490 100%); color: white; }
+    .sidebar-item.active i { color: white; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .pulse-dot::after {
+      content: ''; position: absolute; inset: 0;
+      border-radius: 50%; background: currentColor;
+      animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+      opacity: 0.4;
+    }
+    @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+    .anim-in { animation: fadeUp 0.4s ease-out; }
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body x-data="medecinApp()">
+
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white border-r border-slate-200 flex flex-col">
+    <div class="p-5 border-b border-slate-100">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-medical-teal to-brand-700 rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/30">
+          <i data-lucide="bone" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <div class="font-display font-bold text-slate-900 text-sm leading-tight">CABINET SAMI</div>
+          <div class="text-xs text-slate-500">BELHARETH · Médecin</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="p-3 flex-1 overflow-y-auto">
+      <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 mt-3 mb-2">Principal</div>
+      <button @click="page='dashboard'" :class="page==='dashboard' ? 'sidebar-item active shadow-lg shadow-teal-500/20' : 'text-slate-700 hover:bg-slate-50'" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition mb-1">
+        <i data-lucide="layout-dashboard" class="w-4.5 h-4.5 text-slate-500"></i>
+        Tableau de bord
+      </button>
+      <button @click="page='patients'" :class="page==='patients' ? 'sidebar-item active shadow-lg shadow-teal-500/20' : 'text-slate-700 hover:bg-slate-50'" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition mb-1">
+        <i data-lucide="users" class="w-4.5 h-4.5 text-slate-500"></i>
+        Patients
+        <span class="ml-auto bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">1247</span>
+      </button>
+      <button @click="page='consultation'" :class="page==='consultation' ? 'sidebar-item active shadow-lg shadow-teal-500/20' : 'text-slate-700 hover:bg-slate-50'" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition mb-1">
+        <i data-lucide="stethoscope" class="w-4.5 h-4.5 text-slate-500"></i>
+        Consultation
+      </button>
+      <button @click="page='agenda'" :class="page==='agenda' ? 'sidebar-item active shadow-lg shadow-teal-500/20' : 'text-slate-700 hover:bg-slate-50'" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition mb-1">
+        <i data-lucide="calendar" class="w-4.5 h-4.5 text-slate-500"></i>
+        Agenda
+        <span class="ml-auto bg-rose-100 text-rose-700 text-[10px] font-bold px-2 py-0.5 rounded-full">12</span>
+      </button>
+      <button @click="page='bloc'" :class="page==='bloc' ? 'sidebar-item active shadow-lg shadow-teal-500/20' : 'text-slate-700 hover:bg-slate-50'" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition mb-1">
+        <i data-lucide="syringe" class="w-4.5 h-4.5 text-slate-500"></i>
+        Bloc opératoire
+      </button>
+
+      <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 mt-6 mb-2">Médical</div>
+      <button @click="page='protocoles'" :class="page==='protocoles' ? 'sidebar-item active shadow-lg shadow-teal-500/20' : 'text-slate-700 hover:bg-slate-50'" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition mb-1">
+        <i data-lucide="book-marked" class="w-4.5 h-4.5 text-slate-500"></i>
+        Protocoles
+      </button>
+      <button class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition mb-1">
+        <i data-lucide="image" class="w-4.5 h-4.5 text-slate-500"></i>
+        Imagerie
+      </button>
+      <button class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition mb-1">
+        <i data-lucide="flask-conical" class="w-4.5 h-4.5 text-slate-500"></i>
+        Biologie
+      </button>
+      <button class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition mb-1">
+        <i data-lucide="file-text" class="w-4.5 h-4.5 text-slate-500"></i>
+        Documents
+      </button>
+
+      <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 mt-6 mb-2">Gestion</div>
+      <button class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition mb-1">
+        <i data-lucide="bar-chart-3" class="w-4.5 h-4.5 text-slate-500"></i>
+        Analytics
+      </button>
+      <button class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition mb-1">
+        <i data-lucide="message-circle" class="w-4.5 h-4.5 text-slate-500"></i>
+        Messagerie
+        <span class="ml-auto bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full">5</span>
+      </button>
+    </div>
+
+    <!-- User -->
+    <div class="p-3 border-t border-slate-100">
+      <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 cursor-pointer">
+        <div class="w-9 h-9 bg-gradient-to-br from-medical-teal to-brand-700 rounded-full flex items-center justify-center text-white text-xs font-bold">SB</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-bold text-slate-900 truncate">Dr Sami Belhareth</div>
+          <div class="text-[10px] text-slate-500">Chirurgien orthopédiste</div>
+        </div>
+        <i data-lucide="settings-2" class="w-4 h-4 text-slate-400"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 overflow-y-auto">
+    <!-- Top bar -->
+    <div class="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-8 py-4">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 flex-1 max-w-2xl">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+            <input type="text" placeholder="Rechercher un patient, une pathologie, un document..." class="w-full pl-11 pr-4 py-2.5 bg-slate-100 border-0 rounded-xl text-sm focus:ring-2 focus:ring-medical-teal focus:bg-white transition" />
+            <kbd class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 bg-white border border-slate-200 rounded px-1.5 py-0.5">⌘K</kbd>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="px-4 py-2 bg-medical-teal text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition flex items-center gap-2 shadow-lg shadow-teal-500/20">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Nouvelle consultation
+          </button>
+          <button class="relative p-2.5 hover:bg-slate-100 rounded-xl transition">
+            <i data-lucide="bell" class="w-5 h-5 text-slate-600"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+          </button>
+          <div class="h-8 w-px bg-slate-200"></div>
+          <div class="text-right">
+            <div class="text-xs text-slate-500">Lundi 5 juin 2026</div>
+            <div class="text-xs font-semibold text-slate-700" x-text="currentTime"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== DASHBOARD ========== -->
+    <div x-show="page==='dashboard'" class="p-8 anim-in">
+      <!-- Welcome -->
+      <div class="mb-8">
+        <h2 class="font-display text-3xl font-bold text-slate-900">Bonjour Dr Belhareth 👋</h2>
+        <p class="text-slate-600 mt-1">Voici votre journée du <span class="font-semibold text-slate-900">lundi 5 juin 2026</span></p>
+      </div>
+
+      <!-- KPIs -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-11 h-11 bg-teal-100 rounded-xl flex items-center justify-center">
+              <i data-lucide="calendar-check-2" class="w-5 h-5 text-medical-teal"></i>
+            </div>
+            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+8%</span>
+          </div>
+          <div class="text-3xl font-display font-bold text-slate-900">12</div>
+          <div class="text-sm text-slate-500 mt-1">Consultations aujourd'hui</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-11 h-11 bg-cyan-100 rounded-xl flex items-center justify-center">
+              <i data-lucide="syringe" class="w-5 h-5 text-cyan-700"></i>
+            </div>
+            <span class="text-xs font-semibold text-slate-500 bg-slate-50 px-2 py-1 rounded-full">→</span>
+          </div>
+          <div class="text-3xl font-display font-bold text-slate-900">3</div>
+          <div class="text-sm text-slate-500 mt-1">Chirurgies cette semaine</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-11 h-11 bg-amber-100 rounded-xl flex items-center justify-center">
+              <i data-lucide="file-signature" class="w-5 h-5 text-amber-700"></i>
+            </div>
+            <span class="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-1 rounded-full">!</span>
+          </div>
+          <div class="text-3xl font-display font-bold text-slate-900">7</div>
+          <div class="text-sm text-slate-500 mt-1">PEC CNAM à valider</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <div class="flex items-start justify-between mb-3">
+            <div class="w-11 h-11 bg-violet-100 rounded-xl flex items-center justify-center">
+              <i data-lucide="trending-up" class="w-5 h-5 text-violet-700"></i>
+            </div>
+            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+24%</span>
+          </div>
+          <div class="text-3xl font-display font-bold text-slate-900">847</div>
+          <div class="text-sm text-slate-500 mt-1">Patients ce mois</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Agenda du jour -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h3 class="font-display font-bold text-lg text-slate-900">Agenda du jour</h3>
+              <p class="text-xs text-slate-500">12 rendez-vous · 3 urgences potentielles</p>
+            </div>
+            <button @click="page='agenda'" class="text-sm text-medical-teal font-semibold hover:underline">Voir l'agenda →</button>
+          </div>
+          <div class="divide-y divide-slate-100">
+            <!-- RDV item -->
+            <template x-for="rdv in rdvDuJour" :key="rdv.id">
+              <div @click="if(rdv.id===1){selectedPatient=patients[0];page='fichePatient'}" class="p-4 hover:bg-slate-50 cursor-pointer transition flex items-center gap-4">
+                <div class="text-center min-w-[60px]">
+                  <div class="text-xs text-slate-500 font-medium" x-text="rdv.heure"></div>
+                  <div class="text-[10px] text-slate-400" x-text="rdv.duree"></div>
+                </div>
+                <div :class="rdv.couleur" class="w-1 h-12 rounded-full"></div>
+                <div :class="'w-10 h-10 ' + rdv.avatarBg" class="rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  <span x-text="rdv.initiales"></span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <div class="font-semibold text-slate-900 text-sm truncate" x-text="rdv.nom"></div>
+                    <span x-show="rdv.urgent" class="text-[10px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.5 rounded">URGENT</span>
+                  </div>
+                  <div class="text-xs text-slate-500 truncate" x-text="rdv.motif"></div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span x-text="rdv.statut" :class="rdv.statutColor" class="text-[10px] font-semibold px-2 py-1 rounded-full"></span>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="space-y-6">
+          <!-- Chirurgies à venir -->
+          <div class="bg-gradient-to-br from-medical-teal to-brand-800 rounded-2xl p-5 text-white shadow-xl shadow-teal-500/20 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+            <div class="relative">
+              <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="syringe" class="w-5 h-5"></i>
+                <span class="font-bold text-sm uppercase tracking-wider">Bloc opératoire</span>
+              </div>
+              <div class="space-y-3">
+                <div class="bg-white/15 backdrop-blur rounded-xl p-3">
+                  <div class="flex items-start justify-between mb-2">
+                    <div>
+                      <div class="font-bold text-sm">PTG droite</div>
+                      <div class="text-xs opacity-80">Bibi Hedia · 49 ans</div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-xs font-bold">DEMAIN</div>
+                      <div class="text-[10px] opacity-80">08h00 · Bloc 2</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-white/15 backdrop-blur rounded-xl p-3">
+                  <div class="flex items-start justify-between mb-2">
+                    <div>
+                      <div class="font-bold text-sm">Hallux Valgus percut.</div>
+                      <div class="text-xs opacity-80">Leila Sassi · 56 ans</div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-xs font-bold">JEU.</div>
+                      <div class="text-[10px] opacity-80">10h30 · Bloc 1</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-white/15 backdrop-blur rounded-xl p-3">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="font-bold text-sm">Ligamento LCA</div>
+                      <div class="text-xs opacity-80">Mohamed Bouzid · 28 ans</div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-xs font-bold">VEN.</div>
+                      <div class="text-[10px] opacity-80">14h00 · Bloc 3</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alertes -->
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-display font-bold text-slate-900">Alertes</h3>
+              <span class="text-xs bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-full">3</span>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-start gap-3 p-3 bg-rose-50 rounded-xl border border-rose-100">
+                <div class="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center shrink-0">
+                  <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-700"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-bold text-slate-900">Résultats biologie anormaux</div>
+                  <div class="text-[11px] text-slate-600 mt-0.5">Patient Bouzid M. — Glycémie pré-op élevée</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-100">
+                <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
+                  <i data-lucide="clock" class="w-4 h-4 text-amber-700"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-bold text-slate-900">PEC CNAM en attente</div>
+                  <div class="text-[11px] text-slate-600 mt-0.5">7 demandes à valider</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                  <i data-lucide="message-circle" class="w-4 h-4 text-blue-700"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-bold text-slate-900">Nouveau message confrère</div>
+                  <div class="text-[11px] text-slate-600 mt-0.5">Dr Ben Mradbibi — Avis IRM</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PATIENTS ========== -->
+    <div x-show="page==='patients'" class="p-8 anim-in">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="font-display text-3xl font-bold text-slate-900">Patients</h2>
+          <p class="text-slate-600 mt-1">1247 patients · 23 nouveaux ce mois</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold flex items-center gap-2 hover:border-medical-teal transition">
+            <i data-lucide="filter" class="w-4 h-4"></i>
+            Filtres
+          </button>
+          <button class="px-4 py-2.5 bg-medical-teal text-white rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-brand-700 transition shadow-lg shadow-teal-500/20">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            Nouveau patient
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter pills -->
+      <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+        <button class="px-3 py-1.5 bg-medical-teal text-white text-xs font-semibold rounded-full whitespace-nowrap">Tous · 1247</button>
+        <button class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-full whitespace-nowrap hover:bg-slate-50">Actifs · 892</button>
+        <button class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-full whitespace-nowrap hover:bg-slate-50">Post-op · 47</button>
+        <button class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-full whitespace-nowrap hover:bg-slate-50">CNAM · 1098</button>
+        <button class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-full whitespace-nowrap hover:bg-slate-50">Hallux Valgus</button>
+        <button class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-full whitespace-nowrap hover:bg-slate-50">PTG / PTH</button>
+        <button class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-full whitespace-nowrap hover:bg-slate-50">LCA</button>
+        <button class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-full whitespace-nowrap hover:bg-slate-50">Lombalgies</button>
+      </div>
+
+      <!-- Patient list -->
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-slate-50 border-b border-slate-200">
+            <tr class="text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
+              <th class="px-5 py-3">Patient</th>
+              <th class="px-5 py-3">Âge</th>
+              <th class="px-5 py-3">Pathologie</th>
+              <th class="px-5 py-3">Dernière visite</th>
+              <th class="px-5 py-3">Statut</th>
+              <th class="px-5 py-3">CNAM</th>
+              <th class="px-5 py-3"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <template x-for="p in patients" :key="p.id">
+              <tr @click="selectedPatient=p; page='fichePatient'" class="hover:bg-slate-50 cursor-pointer transition">
+                <td class="px-5 py-4">
+                  <div class="flex items-center gap-3">
+                    <div :class="'w-10 h-10 ' + p.avatarBg" class="rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      <span x-text="p.initiales"></span>
+                    </div>
+                    <div>
+                      <div class="font-semibold text-slate-900 text-sm" x-text="p.nom"></div>
+                      <div class="text-xs text-slate-500" x-text="p.telephone"></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-5 py-4 text-sm text-slate-700" x-text="p.age + ' ans'"></td>
+                <td class="px-5 py-4">
+                  <span class="text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md" x-text="p.pathologie"></span>
+                </td>
+                <td class="px-5 py-4 text-sm text-slate-600" x-text="p.derniereVisite"></td>
+                <td class="px-5 py-4">
+                  <span :class="p.statutColor" class="text-[11px] font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full" :class="p.statutDot"></span>
+                    <span x-text="p.statut"></span>
+                  </span>
+                </td>
+                <td class="px-5 py-4">
+                  <span x-show="p.cnam" class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md">✓ CNAM</span>
+                  <span x-show="!p.cnam" class="text-xs text-slate-400">—</span>
+                </td>
+                <td class="px-5 py-4 text-right">
+                  <button class="p-2 hover:bg-slate-100 rounded-lg">
+                    <i data-lucide="more-horizontal" class="w-4 h-4 text-slate-400"></i>
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== FICHE PATIENT 360° ========== -->
+    <div x-show="page==='fichePatient'" class="p-8 anim-in" x-init="$watch('page', v => { if(v==='fichePatient') setTimeout(()=>lucide.createIcons(),50) })">
+      <!-- Breadcrumb -->
+      <div class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+        <button @click="page='patients'" class="hover:text-medical-teal flex items-center gap-1">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour patients
+        </button>
+        <span>/</span>
+        <span class="text-slate-900 font-semibold">Fiche patient</span>
+      </div>
+
+      <!-- Patient header -->
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-6">
+        <div class="flex flex-wrap items-start gap-6">
+          <div class="relative">
+            <div :class="selectedPatient?.avatarBg" class="w-24 h-24 rounded-2xl flex items-center justify-center text-white text-2xl font-display font-bold shadow-lg">
+              <span x-text="selectedPatient?.initiales || 'BH'"></span>
+            </div>
+            <div class="absolute -bottom-2 -right-2 w-7 h-7 bg-emerald-500 rounded-full border-3 border-white flex items-center justify-center">
+              <i data-lucide="check" class="w-4 h-4 text-white"></i>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-1">
+              <h2 class="font-display text-3xl font-bold text-slate-900" x-text="selectedPatient?.nom || 'Bibi Hedia'"></h2>
+              <span class="text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full">CNAM ✓</span>
+              <span class="text-xs font-bold bg-rose-50 text-rose-700 px-2 py-1 rounded-full">Post-op +6S</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
+              <div class="flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> Née le 05/05/1976 · 49 ans</div>
+              <div class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4"></i> 21 290 274</div>
+              <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Salammbô</div>
+              <div class="flex items-center gap-2"><i data-lucide="heart" class="w-4 h-4"></i> Diabétique T2 · HTA</div>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold flex items-center gap-2 hover:border-medical-teal transition">
+              <i data-lucide="phone" class="w-4 h-4"></i> Appeler
+            </button>
+            <button class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold flex items-center gap-2 hover:border-medical-teal transition">
+              <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp
+            </button>
+            <button @click="page='consultation'" class="px-4 py-2.5 bg-medical-teal text-white rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-brand-700 transition shadow-lg shadow-teal-500/20">
+              <i data-lucide="stethoscope" class="w-4 h-4"></i> Démarrer consultation
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick stats -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6 pt-6 border-t border-slate-100">
+          <div>
+            <div class="text-2xl font-display font-bold text-slate-900">23</div>
+            <div class="text-xs text-slate-500">Consultations</div>
+          </div>
+          <div>
+            <div class="text-2xl font-display font-bold text-slate-900">2</div>
+            <div class="text-xs text-slate-500">Chirurgies</div>
+          </div>
+          <div>
+            <div class="text-2xl font-display font-bold text-slate-900">14</div>
+            <div class="text-xs text-slate-500">Ordonnances</div>
+          </div>
+          <div>
+            <div class="text-2xl font-display font-bold text-slate-900">6</div>
+            <div class="text-xs text-slate-500">Imageries</div>
+          </div>
+          <div>
+            <div class="text-2xl font-display font-bold text-emerald-600">85%</div>
+            <div class="text-xs text-slate-500">Observance</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="border-b border-slate-100 px-2 flex items-center gap-1 overflow-x-auto">
+          <button @click="patientTab='synthese'" :class="patientTab==='synthese' ? 'border-medical-teal text-medical-teal' : 'border-transparent text-slate-600 hover:text-slate-900'" class="px-4 py-3 text-sm font-semibold border-b-2 transition whitespace-nowrap">Synthèse</button>
+          <button @click="patientTab='consultations'" :class="patientTab==='consultations' ? 'border-medical-teal text-medical-teal' : 'border-transparent text-slate-600 hover:text-slate-900'" class="px-4 py-3 text-sm font-semibold border-b-2 transition whitespace-nowrap">Historique consultations</button>
+          <button @click="patientTab='imagerie'" :class="patientTab==='imagerie' ? 'border-medical-teal text-medical-teal' : 'border-transparent text-slate-600 hover:text-slate-900'" class="px-4 py-3 text-sm font-semibold border-b-2 transition whitespace-nowrap">Imagerie</button>
+          <button @click="patientTab='biologie'" :class="patientTab==='biologie' ? 'border-medical-teal text-medical-teal' : 'border-transparent text-slate-600 hover:text-slate-900'" class="px-4 py-3 text-sm font-semibold border-b-2 transition whitespace-nowrap">Biologie</button>
+          <button @click="patientTab='ordonnances'" :class="patientTab==='ordonnances' ? 'border-medical-teal text-medical-teal' : 'border-transparent text-slate-600 hover:text-slate-900'" class="px-4 py-3 text-sm font-semibold border-b-2 transition whitespace-nowrap">Ordonnances</button>
+          <button @click="patientTab='chirurgies'" :class="patientTab==='chirurgies' ? 'border-medical-teal text-medical-teal' : 'border-transparent text-slate-600 hover:text-slate-900'" class="px-4 py-3 text-sm font-semibold border-b-2 transition whitespace-nowrap">Chirurgies</button>
+          <button @click="patientTab='documents'" :class="patientTab==='documents' ? 'border-medical-teal text-medical-teal' : 'border-transparent text-slate-600 hover:text-slate-900'" class="px-4 py-3 text-sm font-semibold border-b-2 transition whitespace-nowrap">Documents</button>
+        </div>
+
+        <!-- Synthèse tab -->
+        <div x-show="patientTab==='synthese'" class="p-6 grid lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Pathologie principale -->
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-display font-bold text-slate-900 flex items-center gap-2">
+                  <i data-lucide="target" class="w-5 h-5 text-medical-teal"></i>
+                  Pathologie principale
+                </h3>
+                <button class="text-xs text-medical-teal font-semibold">Modifier</button>
+              </div>
+              <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-5 border border-teal-100">
+                <div class="flex items-start justify-between mb-3">
+                  <div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-medical-teal mb-1">Gonarthrose bilatérale</div>
+                    <div class="font-display font-bold text-xl text-slate-900">PTG droite réalisée</div>
+                    <div class="text-sm text-slate-600 mt-1">CIM-10 : M17.0 · Cotation CNAM : 04.01.32</div>
+                  </div>
+                  <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">Post-op J+42</span>
+                </div>
+                <div class="grid grid-cols-3 gap-3 mt-4">
+                  <div class="bg-white/60 rounded-lg p-3">
+                    <div class="text-[10px] uppercase font-bold text-slate-500">Chirurgie</div>
+                    <div class="text-sm font-bold text-slate-900 mt-0.5">24 avril 2026</div>
+                  </div>
+                  <div class="bg-white/60 rounded-lg p-3">
+                    <div class="text-[10px] uppercase font-bold text-slate-500">Flexion actuelle</div>
+                    <div class="text-sm font-bold text-slate-900 mt-0.5">95° / 120° cible</div>
+                  </div>
+                  <div class="bg-white/60 rounded-lg p-3">
+                    <div class="text-[10px] uppercase font-bold text-slate-500">EVA Douleur</div>
+                    <div class="text-sm font-bold text-emerald-700 mt-0.5">3 / 10 ↓</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Antécédents -->
+            <div>
+              <h3 class="font-display font-bold text-slate-900 flex items-center gap-2 mb-3">
+                <i data-lucide="history" class="w-5 h-5 text-medical-teal"></i>
+                Antécédents
+              </h3>
+              <div class="grid md:grid-cols-2 gap-3">
+                <div class="border border-slate-200 rounded-xl p-4">
+                  <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Médicaux</div>
+                  <ul class="space-y-1.5 text-sm text-slate-700">
+                    <li class="flex items-start gap-2"><i data-lucide="circle-dot" class="w-3 h-3 mt-1 text-amber-600"></i> Diabète type 2 (2018)</li>
+                    <li class="flex items-start gap-2"><i data-lucide="circle-dot" class="w-3 h-3 mt-1 text-rose-600"></i> HTA traitée</li>
+                    <li class="flex items-start gap-2"><i data-lucide="circle-dot" class="w-3 h-3 mt-1 text-slate-400"></i> Dyslipidémie</li>
+                  </ul>
+                </div>
+                <div class="border border-slate-200 rounded-xl p-4">
+                  <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Chirurgicaux</div>
+                  <ul class="space-y-1.5 text-sm text-slate-700">
+                    <li class="flex items-start gap-2"><i data-lucide="circle-dot" class="w-3 h-3 mt-1 text-cyan-600"></i> Cholécystectomie (2010)</li>
+                    <li class="flex items-start gap-2"><i data-lucide="circle-dot" class="w-3 h-3 mt-1 text-teal-600"></i> PTG droite (avril 2026)</li>
+                  </ul>
+                </div>
+                <div class="border border-slate-200 rounded-xl p-4">
+                  <div class="text-xs font-bold uppercase tracking-wider text-rose-600 mb-2">⚠ Allergies</div>
+                  <ul class="space-y-1.5 text-sm text-slate-700">
+                    <li class="flex items-start gap-2"><i data-lucide="alert-circle" class="w-3 h-3 mt-1 text-rose-600"></i> Pénicilline</li>
+                    <li class="flex items-start gap-2"><i data-lucide="alert-circle" class="w-3 h-3 mt-1 text-rose-600"></i> Iode</li>
+                  </ul>
+                </div>
+                <div class="border border-slate-200 rounded-xl p-4">
+                  <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Mode de vie</div>
+                  <ul class="space-y-1.5 text-sm text-slate-700">
+                    <li>Non fumeuse</li>
+                    <li>IMC : 28 (surpoids)</li>
+                    <li>Profession : enseignante</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Traitement en cours -->
+            <div>
+              <h3 class="font-display font-bold text-slate-900 flex items-center gap-2 mb-3">
+                <i data-lucide="pill" class="w-5 h-5 text-medical-teal"></i>
+                Traitement en cours
+              </h3>
+              <div class="space-y-2">
+                <div class="flex items-center gap-4 p-3 bg-slate-50 rounded-xl">
+                  <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i data-lucide="capsule" class="w-5 h-5 text-blue-700"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-semibold text-sm text-slate-900">Voltarène LP75 mg</div>
+                    <div class="text-xs text-slate-500">1 cp/jour après dîner · 2 semaines</div>
+                  </div>
+                  <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md">En cours</span>
+                </div>
+                <div class="flex items-center gap-4 p-3 bg-slate-50 rounded-xl">
+                  <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <i data-lucide="capsule" class="w-5 h-5 text-purple-700"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-semibold text-sm text-slate-900">Lanzor 30 mg</div>
+                    <div class="text-xs text-slate-500">1 cp/jour · 2 semaines (protection gastrique)</div>
+                  </div>
+                  <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md">En cours</span>
+                </div>
+                <div class="flex items-center gap-4 p-3 bg-slate-50 rounded-xl">
+                  <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <i data-lucide="capsule" class="w-5 h-5 text-orange-700"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-semibold text-sm text-slate-900">Tramadis 50 mg</div>
+                    <div class="text-xs text-slate-500">Si douleur · 1 boîte</div>
+                  </div>
+                  <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-1 rounded-md">À la demande</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column -->
+          <div class="space-y-6">
+            <!-- Timeline -->
+            <div>
+              <h3 class="font-display font-bold text-slate-900 flex items-center gap-2 mb-4">
+                <i data-lucide="clock" class="w-5 h-5 text-medical-teal"></i>
+                Activité récente
+              </h3>
+              <div class="relative pl-6">
+                <div class="absolute left-2 top-2 bottom-2 w-0.5 bg-slate-200"></div>
+                <div class="relative mb-5">
+                  <div class="absolute -left-6 top-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow"></div>
+                  <div class="text-xs text-slate-500">Aujourd'hui · 09:30</div>
+                  <div class="text-sm font-semibold text-slate-900 mt-0.5">Consultation de contrôle post-op</div>
+                </div>
+                <div class="relative mb-5">
+                  <div class="absolute -left-6 top-1 w-4 h-4 bg-cyan-500 rounded-full border-2 border-white shadow"></div>
+                  <div class="text-xs text-slate-500">23 mai · 10:00</div>
+                  <div class="text-sm font-semibold text-slate-900 mt-0.5">Échographie abdomino-pelvienne</div>
+                  <div class="text-xs text-slate-500 mt-0.5">Dr L. Ben Temellist</div>
+                </div>
+                <div class="relative mb-5">
+                  <div class="absolute -left-6 top-1 w-4 h-4 bg-violet-500 rounded-full border-2 border-white shadow"></div>
+                  <div class="text-xs text-slate-500">24 avril</div>
+                  <div class="text-sm font-semibold text-slate-900 mt-0.5">PTG droite — Bloc 2</div>
+                  <div class="text-xs text-slate-500 mt-0.5">Implant Stryker Triathlon</div>
+                </div>
+                <div class="relative">
+                  <div class="absolute -left-6 top-1 w-4 h-4 bg-slate-300 rounded-full border-2 border-white shadow"></div>
+                  <div class="text-xs text-slate-500">15 mars</div>
+                  <div class="text-sm font-semibold text-slate-900 mt-0.5">Radio genoux en charge</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="bg-amber-50 rounded-xl p-4 border border-amber-100">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="sticky-note" class="w-4 h-4 text-amber-700"></i>
+                <h4 class="font-bold text-sm text-slate-900">Note importante</h4>
+              </div>
+              <p class="text-xs text-slate-700 leading-relaxed">
+                Patiente très observante. Préfère les RDV en matinée. À surveiller : équilibre glycémique en post-op. Contact urgence : sa fille (98 765 432).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other tabs (placeholder) -->
+        <div x-show="patientTab==='imagerie'" class="p-6">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="aspect-square bg-slate-900 rounded-xl overflow-hidden relative group cursor-pointer">
+              <div class="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
+                <i data-lucide="image" class="w-12 h-12 text-slate-500"></i>
+              </div>
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                <div class="text-white text-xs font-bold">Radio genoux F+P</div>
+                <div class="text-slate-300 text-[10px]">27/01/2020</div>
+              </div>
+            </div>
+            <div class="aspect-square bg-slate-900 rounded-xl overflow-hidden relative group cursor-pointer">
+              <div class="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
+                <i data-lucide="layers" class="w-12 h-12 text-slate-500"></i>
+              </div>
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                <div class="text-white text-xs font-bold">Scanner rachis L</div>
+                <div class="text-slate-300 text-[10px]">26/12/2013</div>
+              </div>
+            </div>
+            <div class="aspect-square bg-slate-900 rounded-xl overflow-hidden relative group cursor-pointer">
+              <div class="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
+                <i data-lucide="scan" class="w-12 h-12 text-slate-500"></i>
+              </div>
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                <div class="text-white text-xs font-bold">Écho abdomino-pelv.</div>
+                <div class="text-slate-300 text-[10px]">17/05/2023</div>
+              </div>
+            </div>
+            <div class="aspect-square bg-slate-100 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-medical-teal hover:bg-teal-50 transition">
+              <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-400 mb-2"></i>
+              <div class="text-xs font-semibold text-slate-600">Ajouter imagerie</div>
+              <div class="text-[10px] text-slate-400">DICOM, JPG, PDF</div>
+            </div>
+          </div>
+        </div>
+
+        <div x-show="patientTab==='ordonnances'" class="p-6">
+          <div class="space-y-3">
+            <template x-for="o in [
+              {date:'9 fév 2015',type:'Voltarène + Lanzor + Tramadis',motif:'Lombalgie aiguë',etat:'Délivrée'},
+              {date:'24 avril 2026',type:'Antibioprophylaxie + antalgiques',motif:'Post-op PTG droite',etat:'Délivrée'},
+              {date:'5 juin 2026',type:'Kiné 20 séances + Antalgiques',motif:'Rééducation PTG',etat:'En cours'},
+            ]" :key="o.date">
+              <div class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl hover:shadow-md transition cursor-pointer">
+                <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                  <i data-lucide="file-text" class="w-6 h-6 text-medical-teal"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold text-sm text-slate-900" x-text="o.type"></div>
+                  <div class="text-xs text-slate-500" x-text="o.motif + ' · ' + o.date"></div>
+                </div>
+                <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md" x-text="o.etat"></span>
+                <button class="p-2 hover:bg-slate-100 rounded-lg"><i data-lucide="download" class="w-4 h-4 text-slate-400"></i></button>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CONSULTATION ========== -->
+    <div x-show="page==='consultation'" class="p-8 anim-in">
+      <div class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+        <button @click="page='fichePatient'" class="hover:text-medical-teal flex items-center gap-1">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour fiche
+        </button>
+        <span>/</span>
+        <span class="text-slate-900 font-semibold">Consultation en cours</span>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Left: consultation form -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Patient banner -->
+          <div class="bg-gradient-to-r from-medical-teal to-brand-700 rounded-2xl p-5 text-white flex items-center gap-4 shadow-xl shadow-teal-500/20">
+            <div class="w-14 h-14 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center text-xl font-display font-bold">BH</div>
+            <div class="flex-1">
+              <div class="font-display font-bold text-lg">Bibi Hedia · 49 ans</div>
+              <div class="text-sm text-cyan-100">Consultation contrôle post-op PTG droite (J+42)</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-cyan-100">Durée</div>
+              <div class="font-display font-bold text-2xl">12:34</div>
+            </div>
+          </div>
+
+          <!-- Motif & examen -->
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-display font-bold text-lg text-slate-900">Motif & Examen clinique</h3>
+              <button class="text-xs text-medical-teal font-semibold flex items-center gap-1">
+                <i data-lucide="mic" class="w-3.5 h-3.5"></i> Dictée vocale
+              </button>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <label class="text-xs font-bold uppercase tracking-wider text-slate-600">Motif de consultation</label>
+                <input type="text" value="Contrôle post-opératoire à 6 semaines — Prothèse Totale du Genou droite" class="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-medical-teal focus:bg-white" />
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label class="text-xs font-bold uppercase tracking-wider text-slate-600">EVA douleur</label>
+                  <div class="flex items-center gap-2 mt-2">
+                    <input type="range" min="0" max="10" value="3" class="flex-1 accent-medical-teal" />
+                    <span class="text-2xl font-display font-bold text-medical-teal w-8 text-center">3</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-bold uppercase tracking-wider text-slate-600">Flexion (degrés)</label>
+                  <div class="flex items-center gap-2 mt-2">
+                    <input type="range" min="0" max="140" value="95" class="flex-1 accent-medical-teal" />
+                    <span class="text-2xl font-display font-bold text-medical-teal w-12 text-center">95°</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="text-xs font-bold uppercase tracking-wider text-slate-600">Observations</label>
+                <textarea rows="4" class="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-medical-teal focus:bg-white">Cicatrice propre, pas de signe inflammatoire local. Mobilités : flexion 95°, extension complète. Pas d'épanchement. Appui complet. Bonne tolérance du traitement antalgique. À poursuivre la rééducation.</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- IA Suggestion -->
+          <div class="bg-gradient-to-br from-violet-50 to-cyan-50 rounded-2xl border border-violet-100 p-6 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-violet-200/40 rounded-full blur-2xl"></div>
+            <div class="relative flex items-start gap-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-700 rounded-xl flex items-center justify-center shrink-0">
+                <i data-lucide="sparkles" class="w-6 h-6 text-white"></i>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <h4 class="font-bold text-slate-900">Suggestion IA — Protocole adapté</h4>
+                  <span class="text-[10px] font-bold bg-violet-200 text-violet-900 px-2 py-0.5 rounded-full">BETA</span>
+                </div>
+                <p class="text-sm text-slate-700 mb-4">
+                  D'après votre protocole habituel <strong>PTG +6S</strong> et le profil patient (diabétique, observance 85%), je suggère :
+                </p>
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2 p-2 bg-white rounded-lg">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                    <span class="text-sm text-slate-800">Poursuite kinésithérapie — 20 séances supplémentaires (CNAM PTG)</span>
+                    <button class="ml-auto text-xs text-medical-teal font-semibold">Ajouter</button>
+                  </div>
+                  <div class="flex items-center gap-2 p-2 bg-white rounded-lg">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                    <span class="text-sm text-slate-800">Voltarène LP75 + Lanzor 30 — 2 semaines</span>
+                    <button class="ml-auto text-xs text-medical-teal font-semibold">Ajouter</button>
+                  </div>
+                  <div class="flex items-center gap-2 p-2 bg-white rounded-lg">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                    <span class="text-sm text-slate-800">Radio genou contrôle à 3 mois post-op</span>
+                    <button class="ml-auto text-xs text-medical-teal font-semibold">Ajouter</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ordonnance -->
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                <i data-lucide="file-edit" class="w-5 h-5 text-medical-teal"></i>
+                Ordonnance
+              </h3>
+              <div class="flex items-center gap-2">
+                <button class="text-xs px-3 py-1.5 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200">Modèles</button>
+                <button class="text-xs px-3 py-1.5 bg-medical-teal text-white font-semibold rounded-lg hover:bg-brand-700">+ Médicament</button>
+              </div>
+            </div>
+            <div class="space-y-2 mb-4">
+              <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <div class="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                  <i data-lucide="capsule" class="w-5 h-5 text-blue-700"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold text-sm text-slate-900">VOLTARÈNE LP 75 mg</div>
+                  <div class="text-xs text-slate-600">1 cp/jour · soir après dîner · 2 semaines · 1 boîte</div>
+                </div>
+                <button class="p-1.5 hover:bg-white rounded"><i data-lucide="x" class="w-4 h-4 text-slate-400"></i></button>
+              </div>
+              <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <div class="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
+                  <i data-lucide="capsule" class="w-5 h-5 text-purple-700"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold text-sm text-slate-900">LANZOR 30 mg</div>
+                  <div class="text-xs text-slate-600">1 cp/jour · 30 min avant dîner · 2 semaines · 1 boîte</div>
+                </div>
+                <button class="p-1.5 hover:bg-white rounded"><i data-lucide="x" class="w-4 h-4 text-slate-400"></i></button>
+              </div>
+              <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <div class="w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center shrink-0">
+                  <i data-lucide="capsule" class="w-5 h-5 text-orange-700"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold text-sm text-slate-900">TRAMADIS 50 mg</div>
+                  <div class="text-xs text-slate-600">1 cp si douleur · max 3/jour · 1 boîte</div>
+                </div>
+                <button class="p-1.5 hover:bg-white rounded"><i data-lucide="x" class="w-4 h-4 text-slate-400"></i></button>
+              </div>
+            </div>
+            <div class="bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-start gap-2">
+              <i data-lucide="info" class="w-4 h-4 text-amber-700 mt-0.5"></i>
+              <div class="text-xs text-amber-900">
+                <strong>Conseil :</strong> Prendre une demi-heure avant la séance de rééducation pour optimiser la mobilité.
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm sticky bottom-4">
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-200">Annuler</button>
+              <button class="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:border-medical-teal">Brouillon</button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2 bg-white border border-medical-teal text-medical-teal rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-teal-50">
+                <i data-lucide="printer" class="w-4 h-4"></i> Imprimer
+              </button>
+              <button class="px-5 py-2 bg-medical-teal text-white rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-brand-700 shadow-lg shadow-teal-500/30">
+                <i data-lucide="check" class="w-4 h-4"></i> Valider & Envoyer
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: live preview ordonnance -->
+        <div class="lg:col-span-1">
+          <div class="sticky top-24">
+            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+              <div class="bg-medical-teal px-4 py-2 text-white text-xs font-bold flex items-center justify-between">
+                <span class="flex items-center gap-2"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> Aperçu ordonnance</span>
+                <span>A4</span>
+              </div>
+              <div class="p-6 text-xs text-slate-800 font-serif" style="aspect-ratio: 0.707; min-height: 500px;">
+                <div class="border-b-2 border-medical-teal pb-3 mb-4 text-center">
+                  <div class="font-bold text-base text-medical-teal">Dr Sami BELHARETH</div>
+                  <div class="text-[10px] text-slate-600">Chirurgien orthopédiste et traumatologue</div>
+                  <div class="text-[10px] text-slate-600">Salammbô · Tél. 71 XXX XXX</div>
+                </div>
+                <div class="text-right text-[10px] text-slate-500 mb-4">Salammbô, le 5 juin 2026</div>
+                <div class="mb-4">
+                  <div class="text-[10px] text-slate-500">Patient(e) :</div>
+                  <div class="font-bold text-sm">Mme Bibi Hedia · 49 ans</div>
+                </div>
+                <div class="font-bold text-center text-sm mb-3 underline">ORDONNANCE</div>
+                <div class="space-y-3 text-[11px]">
+                  <div>
+                    <div class="font-bold">Voltarène LP 75 mg</div>
+                    <div class="italic text-slate-600">1 cp tous les soirs après dîner — 2 semaines (1 boîte)</div>
+                  </div>
+                  <div>
+                    <div class="font-bold">Lanzor 30 mg</div>
+                    <div class="italic text-slate-600">1 cp tous les soirs avant dîner — 2 semaines (1 boîte)</div>
+                  </div>
+                  <div>
+                    <div class="font-bold">Tramadis 50 mg</div>
+                    <div class="italic text-slate-600">1 cp si douleur, max 3/jour — 1 boîte</div>
+                  </div>
+                  <div class="pt-2 italic text-[10px] text-slate-600 border-t border-slate-200">
+                    À prendre une demi-heure avant la séance de rééducation.
+                  </div>
+                </div>
+                <div class="mt-8 text-right text-[10px]">
+                  <div class="italic text-slate-600">Signature & cachet</div>
+                  <div class="mt-6 font-bold">Dr Sami Belhareth</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== AGENDA ========== -->
+    <div x-show="page==='agenda'" class="p-8 anim-in">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="font-display text-3xl font-bold text-slate-900">Agenda</h2>
+          <p class="text-slate-600 mt-1">Semaine du 1<sup>er</sup> au 7 juin 2026</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="bg-white border border-slate-200 rounded-xl p-1 flex">
+            <button class="px-3 py-1.5 text-xs font-semibold text-slate-600 rounded-lg">Jour</button>
+            <button class="px-3 py-1.5 text-xs font-semibold bg-medical-teal text-white rounded-lg">Semaine</button>
+            <button class="px-3 py-1.5 text-xs font-semibold text-slate-600 rounded-lg">Mois</button>
+          </div>
+          <button class="px-4 py-2.5 bg-medical-teal text-white rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-brand-700 transition shadow-lg shadow-teal-500/20">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Nouveau RDV
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="grid grid-cols-8 border-b border-slate-200">
+          <div class="px-2 py-3 text-xs font-bold text-slate-500 text-center">Heure</div>
+          <template x-for="(j, idx) in jours" :key="idx">
+            <div :class="idx===0 ? 'bg-teal-50 text-medical-teal' : 'text-slate-700'" class="px-2 py-3 text-center border-l border-slate-200">
+              <div class="text-[10px] uppercase font-bold" x-text="j.jour"></div>
+              <div class="text-lg font-display font-bold" x-text="j.date"></div>
+            </div>
+          </template>
+        </div>
+        <div class="grid grid-cols-8 text-xs">
+          <template x-for="h in ['08:00','09:00','10:00','11:00','12:00','14:00','15:00','16:00','17:00']" :key="h">
+            <div class="contents">
+              <div class="px-2 py-4 text-center text-slate-400 font-semibold border-b border-slate-100" x-text="h"></div>
+              <template x-for="idx in 7" :key="idx">
+                <div class="border-b border-l border-slate-100 min-h-[60px] relative p-1">
+                  <template x-if="h==='09:00' && idx===1">
+                    <div class="bg-rose-500 text-white rounded-lg p-2 text-[10px] cursor-pointer hover:scale-105 transition">
+                      <div class="font-bold">Bibi Hedia</div>
+                      <div class="opacity-90">Post-op PTG</div>
+                    </div>
+                  </template>
+                  <template x-if="h==='10:00' && idx===1">
+                    <div class="bg-blue-500 text-white rounded-lg p-2 text-[10px] cursor-pointer hover:scale-105 transition">
+                      <div class="font-bold">Mehdi Karoui</div>
+                      <div class="opacity-90">Hallux Valgus</div>
+                    </div>
+                  </template>
+                  <template x-if="h==='11:00' && idx===1">
+                    <div class="bg-emerald-500 text-white rounded-lg p-2 text-[10px] cursor-pointer hover:scale-105 transition">
+                      <div class="font-bold">Sami Achour</div>
+                      <div class="opacity-90">Post-op LCA</div>
+                    </div>
+                  </template>
+                  <template x-if="h==='08:00' && idx===2">
+                    <div class="bg-purple-500 text-white rounded-lg p-2 text-[10px] cursor-pointer hover:scale-105 transition border-2 border-purple-300">
+                      <div class="font-bold flex items-center gap-1"><i data-lucide="syringe" class="w-3 h-3"></i> CHIRURGIE</div>
+                      <div class="opacity-90">PTG · Bloc 2</div>
+                    </div>
+                  </template>
+                  <template x-if="h==='14:00' && idx===2">
+                    <div class="bg-amber-500 text-white rounded-lg p-2 text-[10px] cursor-pointer hover:scale-105 transition">
+                      <div class="font-bold">L. Sassi</div>
+                      <div class="opacity-90">Pré-op</div>
+                    </div>
+                  </template>
+                  <template x-if="h==='10:00' && idx===4">
+                    <div class="bg-purple-500 text-white rounded-lg p-2 text-[10px] cursor-pointer hover:scale-105 transition border-2 border-purple-300">
+                      <div class="font-bold flex items-center gap-1"><i data-lucide="syringe" class="w-3 h-3"></i> CHIRURGIE</div>
+                      <div class="opacity-90">Hallux V. · Bloc 1</div>
+                    </div>
+                  </template>
+                  <template x-if="h==='14:00' && idx===5">
+                    <div class="bg-purple-500 text-white rounded-lg p-2 text-[10px] cursor-pointer hover:scale-105 transition border-2 border-purple-300">
+                      <div class="font-bold flex items-center gap-1"><i data-lucide="syringe" class="w-3 h-3"></i> CHIRURGIE</div>
+                      <div class="opacity-90">LCA · Bloc 3</div>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== BLOC OPÉRATOIRE ========== -->
+    <div x-show="page==='bloc'" class="p-8 anim-in">
+      <div class="mb-6">
+        <h2 class="font-display text-3xl font-bold text-slate-900">Bloc opératoire</h2>
+        <p class="text-slate-600 mt-1">3 chirurgies programmées cette semaine</p>
+      </div>
+      <div class="grid lg:grid-cols-3 gap-6">
+        <template x-for="c in chirurgies" :key="c.id">
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div :class="c.headerBg" class="p-4 text-white">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-[10px] font-bold uppercase opacity-80" x-text="c.cotation"></div>
+                  <div class="font-display font-bold text-lg" x-text="c.type"></div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs opacity-80" x-text="c.jour"></div>
+                  <div class="font-bold" x-text="c.heure"></div>
+                </div>
+              </div>
+            </div>
+            <div class="p-5">
+              <div class="flex items-center gap-3 mb-4">
+                <div :class="c.avatarBg" class="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                  <span x-text="c.initiales"></span>
+                </div>
+                <div>
+                  <div class="font-bold text-sm text-slate-900" x-text="c.patient"></div>
+                  <div class="text-xs text-slate-500" x-text="c.age + ' ans · ' + c.clinique"></div>
+                </div>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="flex items-center justify-between py-1.5">
+                  <span class="text-slate-500">Anesthésie</span>
+                  <span class="font-semibold text-slate-900" x-text="c.anesthesie"></span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-t border-slate-100">
+                  <span class="text-slate-500">Bilan pré-op</span>
+                  <span :class="c.bilanColor" class="font-semibold" x-text="c.bilan"></span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-t border-slate-100">
+                  <span class="text-slate-500">PEC CNAM</span>
+                  <span :class="c.pecColor" class="font-semibold" x-text="c.pec"></span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-t border-slate-100">
+                  <span class="text-slate-500">Devis signé</span>
+                  <span class="font-semibold text-emerald-600">✓ Validé</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-t border-slate-100">
+                  <span class="text-slate-500">Implant / Matériel</span>
+                  <span class="font-semibold text-slate-900 text-right" x-text="c.materiel"></span>
+                </div>
+              </div>
+              <button class="w-full mt-4 px-3 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-700 transition">Voir le dossier complet</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- ========== PROTOCOLES ========== -->
+    <div x-show="page==='protocoles'" class="p-8 anim-in">
+      <div class="mb-6">
+        <h2 class="font-display text-3xl font-bold text-slate-900">Protocoles par pathologie</h2>
+        <p class="text-slate-600 mt-1">Vos protocoles standardisés extraits de votre cabinet</p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <template x-for="p in protocoles" :key="p.nom">
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:shadow-xl hover:-translate-y-1 transition cursor-pointer">
+            <div class="flex items-start justify-between mb-3">
+              <div :class="p.couleur" class="w-12 h-12 rounded-xl flex items-center justify-center text-white">
+                <i :data-lucide="p.icone" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs font-bold text-slate-500" x-text="p.cas + ' cas'"></span>
+            </div>
+            <h4 class="font-display font-bold text-slate-900" x-text="p.nom"></h4>
+            <p class="text-xs text-slate-500 mt-1" x-text="p.description"></p>
+            <div class="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400" x-text="p.docs + ' documents'"></span>
+              <span class="ml-auto text-xs text-medical-teal font-semibold">Ouvrir →</span>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function medecinApp() {
+  return {
+    page: 'dashboard',
+    patientTab: 'synthese',
+    selectedPatient: null,
+    currentTime: '',
+    init() {
+      this.updateTime();
+      setInterval(() => this.updateTime(), 60000);
+      this.$watch('page', () => setTimeout(() => lucide.createIcons(), 50));
+      this.$watch('patientTab', () => setTimeout(() => lucide.createIcons(), 50));
+    },
+    updateTime() {
+      const d = new Date();
+      this.currentTime = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+    },
+    rdvDuJour: [
+      {id:1, heure:'09:30', duree:'30min', nom:'Bibi Hedia', motif:'Contrôle post-op PTG droite J+42', couleur:'bg-rose-400', avatarBg:'bg-rose-500', initiales:'BH', statut:'En cours', statutColor:'bg-emerald-100 text-emerald-700', urgent:false},
+      {id:2, heure:'10:15', duree:'30min', nom:'Mehdi Karoui', motif:'1ère consultation — Hallux Valgus bilatéral', couleur:'bg-blue-400', avatarBg:'bg-blue-500', initiales:'MK', statut:'Confirmé', statutColor:'bg-blue-100 text-blue-700', urgent:false},
+      {id:3, heure:'11:00', duree:'30min', nom:'Sami Achour', motif:'Post-op ligamentoplastie LCA — 3 mois', couleur:'bg-emerald-400', avatarBg:'bg-emerald-500', initiales:'SA', statut:'Confirmé', statutColor:'bg-emerald-100 text-emerald-700', urgent:false},
+      {id:4, heure:'11:45', duree:'15min', nom:'Mohamed Bouzid', motif:'Pré-op LCA — résultats biologie', couleur:'bg-amber-400', avatarBg:'bg-amber-500', initiales:'MB', statut:'⚠ Bio anormal', statutColor:'bg-amber-100 text-amber-700', urgent:true},
+      {id:5, heure:'14:00', duree:'30min', nom:'Leila Sassi', motif:'Pré-op Hallux Valgus percutané', couleur:'bg-violet-400', avatarBg:'bg-violet-500', initiales:'LS', statut:'Confirmé', statutColor:'bg-violet-100 text-violet-700', urgent:false},
+      {id:6, heure:'14:30', duree:'15min', nom:'Ahmed Trabelsi', motif:'Suite traumatisme cheville droite', couleur:'bg-rose-400', avatarBg:'bg-rose-500', initiales:'AT', statut:'Urgence', statutColor:'bg-rose-100 text-rose-700', urgent:true},
+      {id:7, heure:'15:00', duree:'30min', nom:'Fatma Yahyaoui', motif:'Lombosciatique L5 — IRM contrôle', couleur:'bg-cyan-400', avatarBg:'bg-cyan-500', initiales:'FY', statut:'Confirmé', statutColor:'bg-cyan-100 text-cyan-700', urgent:false},
+    ],
+    patients: [
+      {id:1, nom:'Bibi Hedia', telephone:'21 290 274', age:49, pathologie:'Gonarthrose / PTG droite', derniereVisite:"Aujourd'hui · 09:30", statut:'Post-op +6S', statutColor:'bg-amber-100 text-amber-800', statutDot:'bg-amber-500', cnam:true, avatarBg:'bg-rose-500', initiales:'BH'},
+      {id:2, nom:'Mehdi Karoui', telephone:'24 567 890', age:42, pathologie:'Hallux Valgus bilatéral', derniereVisite:"Aujourd'hui · 10:15", statut:'1ère consult', statutColor:'bg-blue-100 text-blue-800', statutDot:'bg-blue-500', cnam:true, avatarBg:'bg-blue-500', initiales:'MK'},
+      {id:3, nom:'Sami Achour', telephone:'98 123 456', age:28, pathologie:'Rupture LCA droite', derniereVisite:"Aujourd'hui · 11:00", statut:'Post-op +3M', statutColor:'bg-emerald-100 text-emerald-800', statutDot:'bg-emerald-500', cnam:true, avatarBg:'bg-emerald-500', initiales:'SA'},
+      {id:4, nom:'Mohamed Bouzid', telephone:'52 345 678', age:31, pathologie:'Rupture LCA gauche', derniereVisite:'2 juin 2026', statut:'Pré-op', statutColor:'bg-amber-100 text-amber-800', statutDot:'bg-amber-500', cnam:true, avatarBg:'bg-amber-500', initiales:'MB'},
+      {id:5, nom:'Leila Sassi', telephone:'71 890 123', age:56, pathologie:'Hallux Valgus + Hammer toe', derniereVisite:'30 mai 2026', statut:'Pré-op', statutColor:'bg-violet-100 text-violet-800', statutDot:'bg-violet-500', cnam:true, avatarBg:'bg-violet-500', initiales:'LS'},
+      {id:6, nom:'Ahmed Trabelsi', telephone:'27 654 321', age:35, pathologie:'Entorse cheville stade 3', derniereVisite:'1er juin 2026', statut:'Suivi', statutColor:'bg-cyan-100 text-cyan-800', statutDot:'bg-cyan-500', cnam:false, avatarBg:'bg-cyan-500', initiales:'AT'},
+      {id:7, nom:'Fatma Yahyaoui', telephone:'94 567 123', age:61, pathologie:'Lombosciatique L5-S1', derniereVisite:'28 mai 2026', statut:'Suivi', statutColor:'bg-slate-100 text-slate-700', statutDot:'bg-slate-400', cnam:true, avatarBg:'bg-orange-500', initiales:'FY'},
+      {id:8, nom:'Nawel Mejri', telephone:'92 222 333', age:45, pathologie:'Tendinopathie Achille', derniereVisite:'25 mai 2026', statut:'Suivi', statutColor:'bg-slate-100 text-slate-700', statutDot:'bg-slate-400', cnam:true, avatarBg:'bg-pink-500', initiales:'NM'},
+    ],
+    jours: [
+      {jour:'Lun', date:'01'},
+      {jour:'Mar', date:'02'},
+      {jour:'Mer', date:'03'},
+      {jour:'Jeu', date:'04'},
+      {jour:'Ven', date:'05'},
+      {jour:'Sam', date:'06'},
+      {jour:'Dim', date:'07'},
+    ],
+    chirurgies: [
+      {id:1, type:'PTG droite', cotation:'CNAM 04.01.32', jour:'Mardi 6 juin', heure:'08:00', patient:'Bibi Hedia', initiales:'BH', avatarBg:'bg-rose-500', age:49, clinique:'Clinique La Soukra', anesthesie:'Rachianesthésie', bilan:'✓ Complet', bilanColor:'text-emerald-600', pec:'✓ Validée', pecColor:'text-emerald-600', materiel:'Stryker Triathlon CR', headerBg:'bg-gradient-to-r from-medical-teal to-brand-700'},
+      {id:2, type:'Hallux Valgus percutané', cotation:'CNAM 04.02.41', jour:'Jeudi 8 juin', heure:'10:30', patient:'Leila Sassi', initiales:'LS', avatarBg:'bg-violet-500', age:56, clinique:'Clinique Avicenne', anesthesie:'ALR cheville', bilan:'✓ Complet', bilanColor:'text-emerald-600', pec:'⏳ En attente', pecColor:'text-amber-600', materiel:'Vis Barouk + fraises', headerBg:'bg-gradient-to-r from-violet-600 to-purple-700'},
+      {id:3, type:'Ligamentoplastie LCA', cotation:'CNAM 04.03.55', jour:'Vendredi 9 juin', heure:'14:00', patient:'Mohamed Bouzid', initiales:'MB', avatarBg:'bg-amber-500', age:31, clinique:'Clinique Pasteur', anesthesie:'AG', bilan:'⚠ Glycémie ↑', bilanColor:'text-rose-600', pec:'✓ Validée', pecColor:'text-emerald-600', materiel:'DT4 + vis BIO', headerBg:'bg-gradient-to-r from-amber-500 to-orange-700'},
+    ],
+    protocoles: [
+      {nom:'Hallux Valgus percutané', description:'MICA, chevron, DMMO — protocole complet pré/per/post-op', cas:127, docs:14, couleur:'bg-gradient-to-br from-rose-400 to-rose-600', icone:'footprints'},
+      {nom:'PTG (Prothèse Totale Genou)', description:'Gonarthrose tri-compartimentale — protocole standardisé', cas:89, docs:18, couleur:'bg-gradient-to-br from-medical-teal to-brand-700', icone:'activity'},
+      {nom:'PTH (Prothèse Totale Hanche)', description:'Coxarthrose primitive ou secondaire — voie postérieure', cas:64, docs:16, couleur:'bg-gradient-to-br from-blue-500 to-blue-700', icone:'circle'},
+      {nom:'Ligamentoplastie LCA', description:'DT4 ou KJ — sportifs et accidentés', cas:78, docs:12, couleur:'bg-gradient-to-br from-emerald-500 to-emerald-700', icone:'zap'},
+      {nom:'Rupture tendon Achille', description:'Suture chirurgicale + protocole rééducation 6 mois', cas:42, docs:15, couleur:'bg-gradient-to-br from-purple-500 to-purple-700', icone:'cable'},
+      {nom:'Algodystrophie', description:'SDRC I/II — bilan, traitement médical et rééducation', cas:23, docs:8, couleur:'bg-gradient-to-br from-orange-500 to-red-600', icone:'flame'},
+      {nom:'Lombosciatique / NCB', description:'Hernie discale, conflit radiculaire — médical et chirurgical', cas:156, docs:11, couleur:'bg-gradient-to-br from-amber-500 to-orange-600', icone:'spline'},
+      {nom:'Canal carpien', description:'Libération chirurgicale endoscopique ou à ciel ouvert', cas:48, docs:9, couleur:'bg-gradient-to-br from-cyan-500 to-cyan-700', icone:'hand'},
+      {nom:'Coiffe des rotateurs', description:'Rupture sus-épineux — suture arthroscopique', cas:36, docs:13, couleur:'bg-gradient-to-br from-pink-500 to-rose-600', icone:'shoulder'},
+    ],
+  }
+}
+document.addEventListener('alpine:initialized', () => lucide.createIcons());
+window.addEventListener('load', () => lucide.createIcons());
+</script>
+</body>
+</html>

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CABINET SAMI BELHARETH — Plateforme de soins orthopédiques</title>
+  <meta name="theme-color" content="#0F766E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50:  '#ecfeff',
+              100: '#cffafe',
+              200: '#a5f3fc',
+              300: '#67e8f9',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+              800: '#155e75',
+              900: '#164e63',
+            },
+            medical: {
+              teal: '#0F766E',
+              navy: '#0B3954',
+              mint: '#D1FAE5',
+              cream: '#FEF9F3',
+            }
+          },
+          animation: {
+            'fade-up': 'fadeUp 0.8s ease-out',
+            'fade-in': 'fadeIn 1.2s ease-out',
+            'pulse-slow': 'pulse 4s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'gradient': 'gradient 8s ease infinite',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%': { opacity: '0', transform: 'translateY(30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            gradient: {
+              '0%, 100%': { backgroundPosition: '0% 50%' },
+              '50%': { backgroundPosition: '100% 50%' },
+            },
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+    .font-display { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+    .glass {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .glass-dark {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .gradient-mesh {
+      background:
+        radial-gradient(at 20% 20%, #cffafe 0px, transparent 50%),
+        radial-gradient(at 80% 10%, #a5f3fc 0px, transparent 50%),
+        radial-gradient(at 50% 80%, #d1fae5 0px, transparent 50%),
+        radial-gradient(at 90% 90%, #cffafe 0px, transparent 50%),
+        linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #0F766E 0%, #0891b2 50%, #0E7490 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% 200%;
+      animation: gradient 6s ease infinite;
+    }
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px -15px rgba(15, 118, 110, 0.25);
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.5;
+      animation: float 8s ease-in-out infinite;
+    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #0F766E; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #0e7490; }
+  </style>
+</head>
+<body class="gradient-mesh min-h-screen overflow-x-hidden">
+  <!-- Decorative blobs -->
+  <div class="blob w-96 h-96 bg-cyan-300 top-10 -left-20" style="animation-delay: 0s"></div>
+  <div class="blob w-80 h-80 bg-emerald-300 top-1/3 right-10" style="animation-delay: 2s"></div>
+  <div class="blob w-72 h-72 bg-teal-200 bottom-20 left-1/3" style="animation-delay: 4s"></div>
+
+  <!-- Navigation -->
+  <nav class="relative z-50 px-6 lg:px-12 py-5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <div class="w-11 h-11 bg-gradient-to-br from-medical-teal to-brand-700 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-500/30">
+            <i data-lucide="bone" class="w-6 h-6 text-white"></i>
+          </div>
+          <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-white"></div>
+        </div>
+        <div>
+          <h1 class="font-display font-bold text-lg text-slate-900 leading-tight">CABINET SAMI BELHARETH</h1>
+          <p class="text-xs text-slate-500 font-medium">Chirurgie orthopédique & traumatologique</p>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#features" class="text-sm font-medium text-slate-600 hover:text-medical-teal transition">Fonctionnalités</a>
+        <a href="#spaces" class="text-sm font-medium text-slate-600 hover:text-medical-teal transition">Espaces</a>
+        <a href="#contact" class="text-sm font-medium text-slate-600 hover:text-medical-teal transition">Contact</a>
+        <button class="px-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded-full hover:bg-slate-700 transition shadow-lg">
+          Se connecter
+        </button>
+      </div>
+      <button class="md:hidden p-2">
+        <i data-lucide="menu" class="w-6 h-6 text-slate-700"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative z-10 px-6 lg:px-12 pt-12 lg:pt-20 pb-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <!-- Left: text -->
+        <div class="animate-fade-up">
+          <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur rounded-full border border-teal-100 mb-6 shadow-sm">
+            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+            <span class="text-xs font-semibold text-slate-700">Plateforme certifiée — Salammbô, Tunisie</span>
+          </div>
+          <h2 class="font-display text-5xl lg:text-7xl font-bold text-slate-900 leading-[1.05] mb-6">
+            Votre cabinet,<br />
+            <span class="text-gradient">réinventé.</span>
+          </h2>
+          <p class="text-lg lg:text-xl text-slate-600 leading-relaxed mb-10 max-w-xl">
+            Une plateforme unifiée pour vos consultations, vos chirurgies orthopédiques, votre secrétariat et vos patients. Conforme CNAM, pensée par et pour les orthopédistes.
+          </p>
+          <div class="flex flex-wrap items-center gap-4 mb-12">
+            <button onclick="document.getElementById('spaces').scrollIntoView({behavior:'smooth'})" class="group px-7 py-4 bg-gradient-to-r from-medical-teal to-brand-700 text-white font-semibold rounded-full shadow-xl shadow-teal-500/30 hover:shadow-2xl hover:shadow-teal-500/40 hover:-translate-y-0.5 transition flex items-center gap-2">
+              Accéder à mon espace
+              <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition"></i>
+            </button>
+            <button class="px-7 py-4 bg-white border border-slate-200 text-slate-900 font-semibold rounded-full hover:border-medical-teal hover:text-medical-teal transition flex items-center gap-2 shadow-sm">
+              <i data-lucide="play-circle" class="w-5 h-5"></i>
+              Voir la démo (2 min)
+            </button>
+          </div>
+          <!-- Trust badges -->
+          <div class="flex flex-wrap items-center gap-x-8 gap-y-4">
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-700"></i>
+              </div>
+              <div>
+                <div class="text-xs text-slate-500">Conformité</div>
+                <div class="text-sm font-semibold text-slate-900">CNAM + RGPD</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 bg-cyan-100 rounded-lg flex items-center justify-center">
+                <i data-lucide="lock-keyhole" class="w-5 h-5 text-cyan-700"></i>
+              </div>
+              <div>
+                <div class="text-xs text-slate-500">Données</div>
+                <div class="text-sm font-semibold text-slate-900">Chiffrées AES-256</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 bg-amber-100 rounded-lg flex items-center justify-center">
+                <i data-lucide="zap" class="w-5 h-5 text-amber-700"></i>
+              </div>
+              <div>
+                <div class="text-xs text-slate-500">Disponible</div>
+                <div class="text-sm font-semibold text-slate-900">Hors-ligne PWA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: floating UI preview -->
+        <div class="relative animate-fade-in">
+          <!-- Card 1: Patient -->
+          <div class="absolute -top-4 -left-4 glass rounded-2xl p-4 shadow-2xl z-20 animate-float" style="animation-delay:0s">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-gradient-to-br from-rose-400 to-rose-600 rounded-full flex items-center justify-center text-white font-bold">BH</div>
+              <div>
+                <div class="text-sm font-bold text-slate-900">Bibi Hedia</div>
+                <div class="text-xs text-slate-500">49 ans · CNAM</div>
+              </div>
+              <div class="ml-4 px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">En cours</div>
+            </div>
+          </div>
+
+          <!-- Card 2: Stats -->
+          <div class="absolute top-32 -right-2 glass rounded-2xl p-5 shadow-2xl z-20 animate-float" style="animation-delay:1.5s">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <div class="text-xs text-slate-500 font-medium">Consultations</div>
+                <div class="text-xl font-bold text-slate-900">847</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 text-xs">
+              <span class="text-emerald-600 font-semibold">+24%</span>
+              <span class="text-slate-500">vs mois dernier</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Surgery card -->
+          <div class="absolute bottom-8 -left-8 glass rounded-2xl p-4 shadow-2xl z-20 animate-float" style="animation-delay:3s">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="syringe" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <div class="text-sm font-bold text-slate-900">PTG demain</div>
+                <div class="text-xs text-slate-500">Bloc opératoire · 08h00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main mockup phone -->
+          <div class="relative mx-auto w-80 h-[600px] bg-slate-900 rounded-[3rem] p-3 shadow-2xl border-8 border-slate-800">
+            <div class="w-full h-full bg-white rounded-[2.5rem] overflow-hidden relative">
+              <!-- Phone notch -->
+              <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-900 rounded-b-2xl z-30"></div>
+              <!-- Phone content -->
+              <div class="bg-gradient-to-br from-medical-teal via-brand-700 to-brand-800 h-44 px-6 pt-12 pb-4 relative">
+                <div class="flex items-center justify-between text-white">
+                  <div>
+                    <div class="text-xs opacity-80">Bonjour,</div>
+                    <div class="font-display font-bold text-xl">Dr Belhareth</div>
+                  </div>
+                  <div class="relative">
+                    <i data-lucide="bell" class="w-6 h-6"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
+                  </div>
+                </div>
+                <div class="mt-6 grid grid-cols-3 gap-3">
+                  <div class="bg-white/15 backdrop-blur rounded-xl p-2 text-white">
+                    <div class="text-[10px] opacity-80">RDV jour</div>
+                    <div class="font-bold text-lg">12</div>
+                  </div>
+                  <div class="bg-white/15 backdrop-blur rounded-xl p-2 text-white">
+                    <div class="text-[10px] opacity-80">Chirurgies</div>
+                    <div class="font-bold text-lg">3</div>
+                  </div>
+                  <div class="bg-white/15 backdrop-blur rounded-xl p-2 text-white">
+                    <div class="text-[10px] opacity-80">Urgences</div>
+                    <div class="font-bold text-lg">1</div>
+                  </div>
+                </div>
+              </div>
+              <div class="px-5 py-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="text-sm font-bold text-slate-900">Patients du jour</div>
+                  <div class="text-xs text-medical-teal font-semibold">Voir tout</div>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl">
+                    <div class="w-9 h-9 bg-rose-500 rounded-full flex items-center justify-center text-white text-xs font-bold">BH</div>
+                    <div class="flex-1">
+                      <div class="text-xs font-bold text-slate-900">Bibi Hedia</div>
+                      <div class="text-[10px] text-slate-500">PTG droite — suivi 6S</div>
+                    </div>
+                    <div class="text-[10px] text-slate-600 font-semibold">09:30</div>
+                  </div>
+                  <div class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl">
+                    <div class="w-9 h-9 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">MK</div>
+                    <div class="flex-1">
+                      <div class="text-xs font-bold text-slate-900">Mehdi Karoui</div>
+                      <div class="text-[10px] text-slate-500">Hallux Valgus — 1ère consult.</div>
+                    </div>
+                    <div class="text-[10px] text-slate-600 font-semibold">10:15</div>
+                  </div>
+                  <div class="flex items-center gap-3 p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <div class="w-9 h-9 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs font-bold">SA</div>
+                    <div class="flex-1">
+                      <div class="text-xs font-bold text-slate-900">Sami Achour</div>
+                      <div class="text-[10px] text-emerald-700">Post-op LCA — Excellent</div>
+                    </div>
+                    <div class="text-[10px] text-slate-600 font-semibold">11:00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 Spaces Section -->
+  <section id="spaces" class="relative z-10 px-6 lg:px-12 py-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 animate-fade-up">
+        <div class="inline-block px-4 py-1.5 bg-teal-100 text-medical-teal text-xs font-bold rounded-full mb-4 uppercase tracking-wider">3 espaces, 1 plateforme</div>
+        <h3 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 mb-4">Choisissez votre espace</h3>
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto">Une expérience sur-mesure pour chaque acteur du parcours de soin.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Médecin -->
+        <a href="medecin.html" class="card-hover group relative bg-white rounded-3xl p-8 border border-slate-100 shadow-xl overflow-hidden">
+          <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-full blur-3xl opacity-60"></div>
+          <div class="relative">
+            <div class="w-16 h-16 bg-gradient-to-br from-medical-teal to-brand-700 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-500/30 mb-6">
+              <i data-lucide="stethoscope" class="w-8 h-8 text-white"></i>
+            </div>
+            <h4 class="font-display text-2xl font-bold text-slate-900 mb-3">Espace Médecin</h4>
+            <p class="text-slate-600 mb-6 leading-relaxed">Dossier patient 360°, consultation, ordonnances intelligentes, imagerie DICOM, devis chirurgicaux automatiques.</p>
+            <ul class="space-y-2 mb-8">
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Protocoles par pathologie</li>
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Génération ordonnances en 1 clic</li>
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Visualisation radio/scanner/IRM</li>
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Bloc opératoire & planning</li>
+            </ul>
+            <div class="flex items-center gap-2 text-medical-teal font-semibold group-hover:gap-3 transition">
+              Entrer dans l'espace <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </div>
+          </div>
+        </a>
+
+        <!-- Secrétaire -->
+        <a href="secretaire.html" class="card-hover group relative bg-white rounded-3xl p-8 border border-slate-100 shadow-xl overflow-hidden">
+          <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-violet-100 to-pink-100 rounded-full blur-3xl opacity-60"></div>
+          <div class="relative">
+            <div class="w-16 h-16 bg-gradient-to-br from-violet-500 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30 mb-6">
+              <i data-lucide="calendar-clock" class="w-8 h-8 text-white"></i>
+            </div>
+            <h4 class="font-display text-2xl font-bold text-slate-900 mb-3">Espace Secrétaire</h4>
+            <p class="text-slate-600 mb-6 leading-relaxed">Agenda multi-vues, prise de RDV, caisse, gestion CNAM, archivage, relances automatiques.</p>
+            <ul class="space-y-2 mb-8">
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Agenda jour/semaine/mois</li>
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> PEC CNAM pré-remplis</li>
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Devis & factures auto</li>
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Rappels SMS / WhatsApp</li>
+            </ul>
+            <div class="flex items-center gap-2 text-violet-700 font-semibold group-hover:gap-3 transition">
+              Entrer dans l'espace <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </div>
+          </div>
+        </a>
+
+        <!-- Patient -->
+        <a href="patient.html" class="card-hover group relative bg-white rounded-3xl p-8 border border-slate-100 shadow-xl overflow-hidden">
+          <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-emerald-100 to-lime-100 rounded-full blur-3xl opacity-60"></div>
+          <div class="relative">
+            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30 mb-6">
+              <i data-lucide="user-round-heart" class="w-8 h-8 text-white"></i>
+            </div>
+            <h4 class="font-display text-2xl font-bold text-slate-900 mb-3">Espace Patient</h4>
+            <p class="text-slate-600 mb-6 leading-relaxed">Mon dossier, RDV en ligne, ordonnances, exercices de rééducation guidés, paiement en ligne.</p>
+            <ul class="space-y-2 mb-8">
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> RDV en ligne 24/7</li>
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Ordonnances numériques</li>
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Vidéos d'exercices post-op</li>
+              <li class="flex items-center gap-2 text-sm text-slate-700"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Paiement Konnect/Flouci</li>
+            </ul>
+            <div class="flex items-center gap-2 text-emerald-700 font-semibold group-hover:gap-3 transition">
+              Entrer dans l'espace <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="relative z-10 px-6 lg:px-12 py-20 bg-gradient-to-b from-transparent to-white/50">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full mb-4 uppercase tracking-wider">Fonctionnalités</div>
+        <h3 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 mb-4">Pensé pour l'orthopédie</h3>
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto">Chaque fonction a été conçue à partir de votre pratique quotidienne.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-xl transition card-hover">
+          <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center mb-4">
+            <i data-lucide="folder-heart" class="w-6 h-6 text-medical-teal"></i>
+          </div>
+          <h5 class="font-bold text-slate-900 mb-2">Dossier 360°</h5>
+          <p class="text-sm text-slate-600">Antécédents, allergies, traitements, imagerie, biologie centralisés.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-xl transition card-hover">
+          <div class="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center mb-4">
+            <i data-lucide="brain-circuit" class="w-6 h-6 text-cyan-700"></i>
+          </div>
+          <h5 class="font-bold text-slate-900 mb-2">IA d'aide à la décision</h5>
+          <p class="text-sm text-slate-600">Suggestions de protocoles par pathologie : Achille, LCA, PTG, Hallux Valgus...</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-xl transition card-hover">
+          <div class="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center mb-4">
+            <i data-lucide="image" class="w-6 h-6 text-violet-700"></i>
+          </div>
+          <h5 class="font-bold text-slate-900 mb-2">Imagerie DICOM</h5>
+          <p class="text-sm text-slate-600">Visualisez radios, scanners et IRM directement dans la fiche patient.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-xl transition card-hover">
+          <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
+            <i data-lucide="file-signature" class="w-6 h-6 text-amber-700"></i>
+          </div>
+          <h5 class="font-bold text-slate-900 mb-2">CNAM Automation</h5>
+          <p class="text-sm text-slate-600">PEC chirurgie et rééducation pré-remplis selon le décret 11 juin 2007.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-xl transition card-hover">
+          <div class="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center mb-4">
+            <i data-lucide="receipt" class="w-6 h-6 text-rose-700"></i>
+          </div>
+          <h5 class="font-bold text-slate-900 mb-2">Devis & Factures</h5>
+          <p class="text-sm text-slate-600">Barème intégré : PTH, PTG, LCA, Hallux Valgus, Arthroscopie...</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-xl transition card-hover">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+            <i data-lucide="message-circle" class="w-6 h-6 text-blue-700"></i>
+          </div>
+          <h5 class="font-bold text-slate-900 mb-2">Messagerie sécurisée</h5>
+          <p class="text-sm text-slate-600">Confrères, kinés, patients — communication chiffrée bout-en-bout.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-xl transition card-hover">
+          <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-4">
+            <i data-lucide="dumbbell" class="w-6 h-6 text-emerald-700"></i>
+          </div>
+          <h5 class="font-bold text-slate-900 mb-2">Rééducation guidée</h5>
+          <p class="text-sm text-slate-600">Vidéos d'exercices post-op envoyées au patient automatiquement.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-xl transition card-hover">
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+            <i data-lucide="bar-chart-3" class="w-6 h-6 text-orange-700"></i>
+          </div>
+          <h5 class="font-bold text-slate-900 mb-2">Analytics</h5>
+          <p class="text-sm text-slate-600">Suivez votre activité : consultations, chirurgies, revenus, pathologies.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="relative z-10 px-6 lg:px-12 py-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="bg-gradient-to-br from-medical-teal via-brand-700 to-medical-navy rounded-[2rem] p-10 lg:p-16 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-72 h-72 bg-cyan-400/20 rounded-full blur-3xl"></div>
+        <div class="relative grid md:grid-cols-4 gap-8 text-white">
+          <div>
+            <div class="font-display text-5xl font-bold mb-2">200+</div>
+            <div class="text-sm text-cyan-100">Modèles de documents intégrés</div>
+          </div>
+          <div>
+            <div class="font-display text-5xl font-bold mb-2">24/7</div>
+            <div class="text-sm text-cyan-100">Disponible en mode hors-ligne</div>
+          </div>
+          <div>
+            <div class="font-display text-5xl font-bold mb-2">100%</div>
+            <div class="text-sm text-cyan-100">Conforme CNAM Tunisie</div>
+          </div>
+          <div>
+            <div class="font-display text-5xl font-bold mb-2">3 espaces</div>
+            <div class="text-sm text-cyan-100">Médecin · Secrétaire · Patient</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact" class="relative z-10 px-6 lg:px-12 py-12 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid md:grid-cols-4 gap-8 mb-10">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-medical-teal to-brand-700 rounded-xl flex items-center justify-center">
+              <i data-lucide="bone" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="font-display font-bold text-slate-900">CABINET SAMI BELHARETH</span>
+          </div>
+          <p class="text-sm text-slate-600">Plateforme dédiée à la chirurgie orthopédique et traumatologique.</p>
+        </div>
+        <div>
+          <h6 class="font-bold text-slate-900 mb-3 text-sm">Espaces</h6>
+          <ul class="space-y-2 text-sm text-slate-600">
+            <li><a href="medecin.html" class="hover:text-medical-teal">Médecin</a></li>
+            <li><a href="secretaire.html" class="hover:text-medical-teal">Secrétaire</a></li>
+            <li><a href="patient.html" class="hover:text-medical-teal">Patient</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="font-bold text-slate-900 mb-3 text-sm">Contact</h6>
+          <ul class="space-y-2 text-sm text-slate-600">
+            <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Salammbô, Le Kram 2025</li>
+            <li class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4"></i> +216 XX XXX XXX</li>
+            <li class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4"></i> contact@drbelhareth.tn</li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="font-bold text-slate-900 mb-3 text-sm">Légal</h6>
+          <ul class="space-y-2 text-sm text-slate-600">
+            <li><a href="#" class="hover:text-medical-teal">Conformité CNAM</a></li>
+            <li><a href="#" class="hover:text-medical-teal">RGPD & Secret médical</a></li>
+            <li><a href="#" class="hover:text-medical-teal">Mentions légales</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+        <div>© 2026 CABINET SAMI BELHARETH. Tous droits réservés.</div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+          Tous les services opérationnels
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
