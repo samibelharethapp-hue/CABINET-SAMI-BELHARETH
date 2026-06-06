@@ -40,17 +40,35 @@ L'application fonctionne **intégralement** dans 2 modes simultanés :
 
 ```
 Cabinet-App/
-├── mockups/              # Prototypes HTML interactifs (Phase 1)
+├── mockups/              # Prototypes HTML interactifs (Phase 1 ✅)
 │   ├── index.html        # Landing + sélection rôle
 │   ├── medecin.html      # Espace Médecin
 │   ├── secretaire.html   # Espace Secrétaire
 │   └── patient.html      # Espace Patient
-├── docs/                 # Architecture, roadmap, modèle données
+├── docs/                 # Architecture, roadmap, modèle données (Phase 1 ✅)
 │   ├── architecture.md
 │   ├── roadmap.md
 │   └── data-model.md
+├── supabase/             # Base de données médicale (Phase 2 ✅)
+│   ├── README.md
+│   └── migrations/
+│       ├── 20260606000001_initial_medical_schema.sql   # 22 tables + RLS
+│       └── 20260606000002_storage_buckets.sql          # 6 buckets fichiers
+├── lovable/              # Génération d'app via Lovable (Phase 3 🚀)
+│   ├── README.md
+│   ├── connection-guide.md
+│   └── super-prompt.md
 └── README.md
 ```
+
+## 🚦 Avancement actuel
+
+| Phase | Statut | Description |
+|---|---|---|
+| **Phase 1** — Maquettes & Docs | ✅ Terminée | 4 prototypes HTML + documentation complète |
+| **Phase 2** — Base Supabase | ✅ SQL prêt | 22 tables + RLS + catalogue CNAM + 6 buckets Storage |
+| **Phase 3** — Génération Lovable | 🚀 En cours | Super-prompt prêt + guide connexion |
+| **Phase 4** — Production | ⏳ À venir | Domaine, certificats, déploiement Vercel/Lovable |
 
 ## 🚀 Pour voir les maquettes
 
